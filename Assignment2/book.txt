@@ -1,0 +1,89 @@
+World War Z: An Oral History of the Zombie War,3.80769,horror,359
+100 Selected Poems,66014,poetry,336
+American Psycho,11.8462,horror,647
+The Hunger Games,ID32925,fiction,946
+Duino Elegies,85608,poetry,378
+Dracula,5.65385,horror,406	
+Jane Eyre,ID20258,fiction,632
+The Raven and Other Poems,6655,poetry,291
+Crime and Punishment,ID13241,fiction,92
+Pride and Prejudice,ID61555,fiction,139
+To Kill a Mockingbird,ID55406,fiction,294
+Hell House,19.4615,horror,860
+Watchers,18.3077,horror,609
+Pet Sematary,32.0385,horror,833	
+Ghost Story,32.4615,horror,312
+The Collected Poems of W.B. Yeats,68220,poetry,170
+Alice's Adventures in Wonderland,ID72721,fiction,761
+Carrie,37.5385,horror,663	
+Rosemary's Baby,5.88462,horror,999	
+The Poetry of Robert Frost,69091,poetry,599
+Memoirs of a Geisha,ID58725,fiction,256
+Lord of the Rings,ID64755,fiction,364
+Howl and Other Poems,88865,poetry,698
+The Giving Tree,ID10093,fiction,366
+The Green Mile,29.3846,horror,116
+Ariel,57093,poetry,676
+The Alchemist,ID76295,fiction,558
+The Help,ID83883,fiction,297
+The Da Vinci Code,ID11980,fiction,945
+The Fault in Our Stars,ID80273,fiction,793
+Swan Song,14.9231,horror,716
+The Haunting of Hill House,1.42308,horror,762	
+The Prophet,75713,poetry,640
+The Picture of Dorian Gray,ID3113,fiction,800
+The Selected Poetry of Rainer Maria Rilke,42816,poetry,415
+The Collected Poems,70861,poetry,952
+Songs of Innocence and of Experience,99253,poetry,471
+Misery,34.4615,horror,606	
+The Collected Poems,28081,poetry,742
+Something Wicked This Way Comes,12.6923,horror,665	
+Where the Sidewalk Ends,32971,poetry,30
+The Divine Comedy,7327,poetry,412
+The Great Gatsby,ID34680,fiction,550
+Illuminations,49705,poetry,411
+Sonnets,21623,poetry,769
+House of Leaves,22.0385,horror,734
+The Essential Rumi,91220,poetry,200
+Lord of the Flies,ID26723,fiction,366
+The Chronicles of Narnia,ID25590,fiction,909
+'Salem's Lot,22.6923,horror,382	
+Ender's Game,ID7555,fiction,251
+Let the Right One In,12.5769,horror,416
+The Perks of Being a Wallflower,ID40879,fiction,469
+The Complete Poems,70547,poetry,132
+The Complete Poems of Emily Dickinson,24330,poetry,650
+Wuthering Heights,ID37358,fiction,762
+The Collected Poems,96365,poetry,279
+The Picture of Dorian Gray,0.846154,horror,130	
+The Exorcist,30.3462,horror,69	
+Needful Things,14.7308,horror,614	
+The Silence of the Lambs,19.8462,horror,806	
+The Shining,28.1154,horror,479	
+Twilight,ID50612,fiction,823
+Harry Potter and the Order,ID64918,fiction,937
+The Waste Land and Other Poems,58706,poetry,499
+Les Fleurs du Mal,19655,poetry,415
+The Stand,5.30769,horror,76
+Interview with the Vampire,17.2692,horror,755
+Heart-Shaped Box,4.26923,horror,198
+Red Dragon,13.2308,horror,825
+The Rime of the Ancient Mariner,77487,poetry,173
+The Canterbury Tales,8612,poetry,200	
+Collected Poems,6018,poetry,187	
+Paradise Lost,82754,poetry,74
+The Strange Case of Dr. Jekyll and Mr. Hyde,25.9231,horror,466	
+Les Misérables,ID23984,fiction,575
+Gone with the Wind,ID22568,fiction,414
+Cujo,19.3077,horror,596
+Leaves of Grass,99405,poetry,257
+The Book Thief,ID56637,fiction,871
+Animal Farm,ID62614,fiction,155
+Divergent,ID45826,fiction,192
+It,3.84615,horror,597	
+Romeo and Juliet,ID77825,fiction,56
+The Complete English Poems,29784,poetry,888
+Twenty Love Poems and a Song of Despair,22215,poetry,403
+Anne of Green Gables,ID58182,fiction,959
+The Amityville Horror,37.2692,horror,754
+Frankenstein,16.4231,horror,569
