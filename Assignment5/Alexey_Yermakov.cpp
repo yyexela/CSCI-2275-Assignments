@@ -255,34 +255,42 @@ class CommunicationNetwork{
 		}
 	}
 
+	//remove the front of the queue if it exists and send it as a message
 	void dequeue(){
 		cout<<endl;
 		string str3 = peekQueue();
 		city *city1 = NULL, *city2 = NULL;
+		//if the front of the queue isn't valid, return
 		if(str3 == ""){
 			return;
 		}
+		//see if Boston and Los Angeles exist
 		city1 = getCity("Boston");
 		city2 = getCity("Los Angeles");
 		if(city1 == NULL || city2 == NULL){
 			cout<<"at least one city not found, exiting"<<endl;
 			return;
 		}
+		//Send the message from Boston to L.A.
 		if(DEBUG) cout<<"message: "<<str3<<endl;
 		cout<<city1->getName()<<" recieved "<<str3<<endl;
 		sendMessage(city1, city2, str3);
 		if(DEBUG) printFull();
 		sendMessage(city2, city1, str3);
 		cout<<endl;
+		//Move queue after the message is sent
 		++queueFront;
+		//Check if there is another element in the queue to send
 		if(queueFront > queueRear){
 			if(DEBUG) cout<<"reset queueFront"<<endl;
 			queueFront = queueRear = -1;
 		}
+		//print queueFront and queueRear
 		cout<<"queueFront: "<<queueFront<<endl;
 		cout<<"queueRear: "<<queueRear<<endl;
 	}
 
+	//Continuously call dequeue() until the queue is empty
 	void emptyQueue(){
 		city *city1 = NULL, *city2 = NULL;
 		city1 = getCity("Boston");
@@ -466,6 +474,7 @@ int main(int argc, char* argv[]){
 				buildNetwork(network);
 				break;
 			case 2:
+				//print network
 				if(!DEBUG) network.printNetwork();
 				if(DEBUG) network.printFull();
 				break;
@@ -479,10 +488,12 @@ int main(int argc, char* argv[]){
 				cout<<endl;
 				break;
 			case 4:
+				//call dequeue()
 				network.dequeue();
 				cout<<endl;
 				break;
 			case 5:
+				//call peekQueue()
 				cout<<endl;
 				str1 = network.peekQueue();
 				if(str1 != "")
@@ -490,6 +501,7 @@ int main(int argc, char* argv[]){
 				cout<<endl;
 				break;
 			case 6:
+				//call emptyQueue()
 				cout<<endl;
 				network.emptyQueue();
 				cout<<endl;
