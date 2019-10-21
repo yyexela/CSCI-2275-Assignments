@@ -57,10 +57,10 @@ class MovieTree {
 		//recurstion is same as in-order traversal, 
 		//instead of printing value you have to increase count by traversing the LL attached to the node
 	}
-	MovieBSTNode* searchBST(MovieBSTNode *node, std::string title){
+	MovieBSTNode* searchBST(MovieBSTNode *node, string title){
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
 	} //use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
-	MovieLLNode* searchLL(MovieLLNode* head, std::string title){
+	MovieLLNode* searchLL(MovieLLNode* head, string title){
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
 	} //use this to return a pointer to a node in a linked list, given a MOVIE TITLE and the head of the linked list
 
@@ -79,7 +79,7 @@ class MovieTree {
 		//call private function countMovieNodes() with root and variable count=0
 		//(count is passed by refference see the private function definition)
 	}
-	void deleteMovieNode(std::string title){
+	void deleteMovieNode(string title){
 		//search the node starting with first letter of title
 		//call the private function searchBST that returns the BST node
 
@@ -93,7 +93,7 @@ class MovieTree {
 		//when node has just 1 child
 		//when node has two children: you need to find in-order successor. Use function treeMinimum by passing node's right child
 	}
-	void addMovieNode(int ranking, std::string title, int releaseYear, int quantity){
+	void addMovieNode(int ranking, string title, int releaseYear, int quantity){
 	//    Create MovieNodeLL called newMovie to be added to its LL
 	//    Create a BST called newIndex node to be added
 	//    If BST is empty, set newIndex as root and set newMovie as head
@@ -101,12 +101,12 @@ class MovieTree {
 	//    if newIndex is not already present, add it in appropriate postition and set newMovie as head
 	//    remeber you are given a parent pointer too, so you need to set parent too
 	}
-	void findMovie(std::string title){
+	void findMovie(string title){
 		//BST search to find the node starting from the first letter of title
 		//then once you find BST node, traverse to the LL attached to it to find the node with title and display information 
 		//if nothign is found print "Movie not found"
 	}
-	void rentMovie(std::string title){
+	void rentMovie(string title){
 		//Find node in BST for the first letter of title
 		//If no node found in BST print "Movie Not Found."
 		//if BST index is found, search for the movie title in the LL pointed by BST node
@@ -116,7 +116,7 @@ class MovieTree {
 	void printMenu(){
 		//just prints the menu
 	}
-	void readFile(std::string filename){
+	void readFile(string filename){
 		//read file 
 		//and call addMovieNode(stoi(rank), title, stoi(year), stoi(quantity));
 	}
