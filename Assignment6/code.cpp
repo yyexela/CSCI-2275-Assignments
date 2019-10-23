@@ -78,6 +78,15 @@ class MovieTree {
 		if(node->right != NULL) printMovieInventory(node->right);
 	}
 	void countMovieNodes(MovieBSTNode *node, int &count){
+		MovieLLNode *tmp = node->head;
+		while(tmp != NULL){
+			count += tmp->quantity;
+			tmp = tmp->next;
+		}
+		if(node->left != NULL)
+			countMovieNodes(node->left, count);
+		if(node->right != NULL)
+			countMovieNodes(node->right, count);
 		//write recursive function
 		//recurstion is same as in-order traversal, 
 		//instead of printing value you have to increase count by traversing the LL attached to the node
@@ -119,7 +128,84 @@ class MovieTree {
 	}
 	int countMovieNodes(){
 		//call private function countMovieNodes() with root and variable count=0
+		int count = 0;
+		countMovieNodes(root, count);
+		return count;
 		//(count is passed by refference see the private function definition)
+	}
+	MovieBSTNode* findLeftMostBSTNode(MovieBSTNode* node){
+		MovieBSTNode* tmp = node;
+		while(tmp->left != NULL){
+			tmp = tmp->left;
+		}
+		return tmp;
+	}
+	void deleteBSTNode(char letter){
+		/*
+		if(DEBUG) cout<<"Called deleteBSTNode"<<endl;
+		MovieBSTNode *search = searchBST(root, letter);
+		//see if the BSTNode was found
+		if(search->letter != letter){
+			cout<<"BSTNode not found"<<endl;
+			return;
+		}
+		//check if node is root
+		if(search == root){
+			if(DEBUG) cout<<"Deleting root"<<endl;
+			//delete root
+			delete search;
+			root = NULL;
+			return;
+		}
+		//see if the node to be delete is one of its kind
+		if(search->left == NULL && search->right == NULL){
+			if(DEBUG) cout<<"Deleting node with no children"<<endl;
+			//update parent pointer and delete node
+			if(search->letter < search->parent->letter){
+				//search is left child of parent
+				search->parent->left = NULL;
+			} else {
+				//search is right child of parent
+				search->parent->right = NULL;
+			}
+		}else if (search->left != NULL && search->right != NULL){
+			MovieBSTNode* min = findLeftMostBSTNode(search->right);
+			MovieBSTNode* minParent = min->parent;
+			//update parent pointer and delete node
+			if(min == search->right){
+				//min is right child of search
+				if(search->letter < search->parent->letter){
+					//search if left child of parent
+					search->parent->left = min;
+					min->parent = search->parent;
+					min->left = search->left;
+					min ->left->parent = min;
+				}
+			}
+			//min is NOT child of parent
+			if(search->letter < search->parent->letter){
+				//search is left child of parent
+				search->parent->left = min;
+				min->parent = search->parent;
+				min->left = search->left;
+				min->left->parent = min;
+				min->right = search->right;
+				min->right->parent = min;
+				minParent->left = NULL;
+			} else {
+				//search is right child of parent
+				search->parent->right = min;
+				min->parent = search->parent;
+				min->left = search->left;
+				min->left->parent = min;
+				min->right = search->right;
+				min->right->parent = min;
+				minParent->left = NULL;
+			}
+		}
+		//free memory
+		delete search;
+		*/
 	}
 	void deleteMovieNode(string title){
 		if(DEBUG) cout<<"Called deleteMovieNode"<<endl;
@@ -345,6 +431,7 @@ int main(int argc, char* argv[]) {
 			case 4:
 				break;
 			case 5:
+				cout<<endl<<"Movies: "<<mt.countMovieNodes()<<endl<<endl;
 				break;
 			case 6:
 				cout<<"Exiting program"<<endl;
