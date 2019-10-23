@@ -80,7 +80,7 @@ class MovieTree {
 	void printLettersInOrder(MovieBSTNode* node){
 		if(node->left != NULL) printLettersInOrder(node->left);
 		if(node != NULL){
-			cout<<"l:"<<node->letter<<" ";
+			cout<<node->letter<<": ";
 			if(node->parent != NULL)
 				cout<<"p:"<<node->parent->letter<<" ";
 			else
@@ -99,7 +99,7 @@ class MovieTree {
 	}
 	void printLettersPreOrder(MovieBSTNode* node){
 		if(node != NULL){
-			cout<<"l:"<<node->letter<<" ";
+			cout<<node->letter<<": ";
 			if(node->parent != NULL)
 				cout<<"p:"<<node->parent->letter<<" ";
 			else
@@ -225,6 +225,7 @@ class MovieTree {
 					//Remember, search is root so don't need to check if it's
 					//right or left of parent
 					min->left = root->left;
+					min->left->parent = min;
 					min->parent = NULL;
 					root = min;
 				}
