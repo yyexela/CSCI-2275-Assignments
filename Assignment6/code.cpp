@@ -233,6 +233,22 @@ class MovieTree {
 		//if BST index is found, search for the movie title in the LL pointed by BST node
 		//Print the LL node information and decrease its quantity
 		//if quantity is 0, call deleteMovieNode() to delete a LL node with the title
+		MovieBSTNode *search = searchBST(root, title[0]);
+		if(title[0] == search->letter){
+			MovieLLNode* tmp = findMovie(search->head, title);
+			if(tmp != NULL){
+				tmp->printInfo();
+				//check if quantity is 0, if it is, deleteNode()
+				--(tmp->quantity);
+			} else {
+				cout<<"Movie not found"<<endl;
+				if(DEBUG) cout<<"in LL"<<endl;
+			}
+		} else {
+			cout<<"Movie not found"<<endl;
+			if(DEBUG) cout<<"in BST"<<endl;
+		}
+		cout<<endl;
 	}
 	void printMenu(){
 		//just prints the menu
@@ -288,12 +304,16 @@ int main(int argc, char* argv[]) {
 		while(!getNum(option));
 		switch(stoi(option)){
 			case 1:
-				cout<<endl<<"Enter a title to search for: "<<endl;
+				cout<<endl<<"Enter a title to search for:"<<endl;
 				getline(cin, str1);
 				cout<<endl;
 				mt.findMovie(str1);
 				break;
 			case 2:
+				cout<<endl<<"Enter a title to rent:"<<endl;
+				getline(cin, str1);
+				cout<<endl;
+				mt.rentMovie(str1);
 				break;
 			case 3:
 				break;
