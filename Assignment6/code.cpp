@@ -1,7 +1,10 @@
 #include<iostream>
 #include<string>
+#include<fstream>
 
 using namespace std;
+
+const bool DEBUG = true;
 
 struct MovieLLNode{
 	int imdb_ranking;
@@ -11,8 +14,7 @@ struct MovieLLNode{
 	MovieLLNode *next;
 	//this is constructor
 	MovieLLNode(){};
-	MovieLLNode(int ranking, string title, int year_released, int quantity)
-	{
+	MovieLLNode(int ranking, string title, int year_released, int quantity){
 	this->imdb_ranking = ranking;
 	this->title = title;
 	this->year_released = year_released;
@@ -22,7 +24,7 @@ struct MovieLLNode{
 };
 
 struct MovieBSTNode{
-	char MovieFirstLetter;
+	char letter;
 	MovieBSTNode *parent;
 	MovieBSTNode *left;
 	MovieBSTNode *right;
@@ -30,8 +32,8 @@ struct MovieBSTNode{
 	MovieLLNode *head;
 	//constructor 
 	MovieBSTNode(){};
-	MovieBSTNode(char first_letter){
-		this->MovieFirstLetter = first_letter;
+	MovieBSTNode(char letter){
+		this->letter = letter;
 		this->parent = NULL;
 		this->left = NULL;
 		this->head = NULL;
@@ -57,18 +59,34 @@ class MovieTree {
 		//recurstion is same as in-order traversal, 
 		//instead of printing value you have to increase count by traversing the LL attached to the node
 	}
-	MovieBSTNode* searchBST(MovieBSTNode *node, string title){
+	//parent if node is not found, or the node if the letter is found
+	MovieBSTNode* searchBST(MovieBSTNode *node, char letter){
+		if((node->left == NULL && letter < node->letter)
+			|| (node->right == NULL && node->letter < letter)
+			|| node->letter == letter) 
+				return node;
+		if(letter < node->letter) return(searchBST(node->left, letter));
+		else return(searchBST(node->right, letter));
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
-	} //use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
+		//use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
+	}
+	//return the node containing title, or return tail if not found, NULL if head is NULL
 	MovieLLNode* searchLL(MovieLLNode* head, string title){
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
-	} //use this to return a pointer to a node in a linked list, given a MOVIE TITLE and the head of the linked list
+		//use this to return a pointer to a node in a linked list, given a MOVIE TITLE and the head of the linked list
+		MovieLLNode *tmp = head;
+		while(tmp != NULL && tmp->next != NULL){
+			if(tmp->title == title) return tmp;
+			tmp = tmp->next;
+		}
+		return tmp;
+	}
 
 	public:
-	MovieTree(char* argv[]){
-		readFile(argv[1]);
-		//print menu
-		//call appropriate function depending on menu printed
+	MovieTree(string file){
+		root = NULL;
+		if(DEBUG) cout<<"Root set to NULL"<<endl;
+		readFile(file);
 	}
 	~MovieTree(){
 	}
@@ -94,12 +112,56 @@ class MovieTree {
 		//when node has two children: you need to find in-order successor. Use function treeMinimum by passing node's right child
 	}
 	void addMovieNode(int ranking, string title, int releaseYear, int quantity){
-	//    Create MovieNodeLL called newMovie to be added to its LL
-	//    Create a BST called newIndex node to be added
-	//    If BST is empty, set newIndex as root and set newMovie as head
-	//    Find if newIndex is already in BST, add newMovie to the LL pointed by newIndex alphabetically
-	//    if newIndex is not already present, add it in appropriate postition and set newMovie as head
-	//    remeber you are given a parent pointer too, so you need to set parent too
+		//    Create MovieLLNode called newMovie to be added to its LL
+		//    Create a BST called newIndex node to be added
+		//    If BST is empty, set newIndex as root and set newMovie as head
+		//    Find if newIndex is already in BST, add newMovie to the LL pointed by newIndex alphabetically
+		//    if newIndex is not already present, add it in appropriate postition and set newMovie as head
+		//    remeber you are given a parent pointer too, so you need to set parent too
+		if(DEBUG) cout<<"Calling addMovieNode"<<endl;
+		if(title.size() <= 0){
+			cout<<"Attempting to add movie with no title, exiting addMovieNode()"<<endl;
+			return;
+		}
+
+		MovieLLNode *llNode = new MovieLLNode(ranking, title, releaseYear, quantity);
+		
+		if(root == NULL){
+			if(DEBUG) cout<<"Root is null, adding "<<title<<endl;
+			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
+			root = bstNode;
+			bstNode->head = llNode;
+			if(DEBUG) cout<<endl;
+			return;
+		}
+
+		if(DEBUG) cout<<"root isn't null"<<endl;
+
+		MovieBSTNode *search = searchBST(root, title[0]);
+		if(search->letter == title[0]){
+			if(DEBUG) cout<<"Node found, adding "<<title<<" to LL"<<endl;
+			if(search->head == NULL){
+				if(DEBUG) cout<<"Head is null, setting "<<title<<" to head"<<endl;
+				search->head = llNode;
+			}
+			else{
+				if(DEBUG) cout<<"Head isn't NULL, adding "<<title<<" to LL"<<endl;
+				MovieLLNode *tmp = searchLL(search->head, title);
+				if(tmp->title == title) tmp->quantity += quantity;
+				else tmp->next = llNode;
+			}
+		}else{
+			if(DEBUG) cout<<"Node not found, making bstNode for "<<title<<endl;
+			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
+			if(title[0] < search->letter){
+				search->left = bstNode;
+			} else {
+				search->right = bstNode;
+			}
+			if(DEBUG) cout<<"Adding llNode as head"<<endl;
+			bstNode->head = llNode;
+		}
+		if(DEBUG) cout<<endl;
 	}
 	void findMovie(string title){
 		//BST search to find the node starting from the first letter of title
@@ -116,9 +178,23 @@ class MovieTree {
 	void printMenu(){
 		//just prints the menu
 	}
-	void readFile(string filename){
+	void readFile(string file){
 		//read file 
 		//and call addMovieNode(stoi(rank), title, stoi(year), stoi(quantity));
+		ifstream ifs;
+		ifs.open(file);
+		string ranking, title, releaseYear, quantity;
+		while(ifs.good()){
+			getline(ifs, ranking, ',');
+			if(DEBUG) cout<<"Ranking: "<<ranking<<endl;
+			getline(ifs, title, ',');
+			if(DEBUG) cout<<"Title: "<<title<<endl;
+			getline(ifs, releaseYear, ',');
+			if(DEBUG) cout<<"Year: "<<releaseYear<<endl;
+			getline(ifs, quantity);
+			if(DEBUG) cout<<"Quantity: "<<quantity<<endl<<endl;
+			addMovieNode(stoi(ranking), title, stoi(releaseYear), stoi(quantity));
+		}
 	}
 };
 
@@ -145,7 +221,7 @@ void printMenu(){
 
 int main(int argc, char* argv[]) {
 	const string FILE = "Assignment6Movies.txt";
-	//MovieTree mt(argv);
+	MovieTree mt(FILE);
 	string option = "";
 	do{
 		option = "";

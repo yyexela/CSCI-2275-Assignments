@@ -3,7 +3,6 @@
 3,The Godfather: Part II,1974,12
 4,The Dark Knight,2008,90
 5,Pulp Fiction,1994,34
-6,12 Angry Men,1957,56
 7,Schindler's List,1993,10
 8,The Good the Bad and the Ugly,1966,2
 9,The Lord of the Rings: The Return of the King,2003,4
