@@ -65,17 +65,17 @@ class MovieTree {
 			|| (node->right == NULL && node->letter < letter)
 			|| node->letter == letter) 
 				return node;
-		if(letter < node->letter) return(searchBST(node->left, letter));
+		else if(letter < node->letter) return(searchBST(node->left, letter));
 		else return(searchBST(node->right, letter));
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
 		//use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
 	}
-	//return the node containing title, or return tail if not found, NULL if head is NULL
+	//return the node containing title, or NULL if title is not found is NULL
 	MovieLLNode* searchLL(MovieLLNode* head, string title){
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
 		//use this to return a pointer to a node in a linked list, given a MOVIE TITLE and the head of the linked list
 		MovieLLNode *tmp = head;
-		while(tmp != NULL && tmp->next != NULL){
+		while(tmp != NULL){
 			if(tmp->title == title) return tmp;
 			tmp = tmp->next;
 		}
@@ -118,18 +118,23 @@ class MovieTree {
 		//    Find if newIndex is already in BST, add newMovie to the LL pointed by newIndex alphabetically
 		//    if newIndex is not already present, add it in appropriate postition and set newMovie as head
 		//    remeber you are given a parent pointer too, so you need to set parent too
+
 		if(DEBUG) cout<<"Calling addMovieNode"<<endl;
+
+		//return if title size doesn't exist
 		if(title.size() <= 0){
 			cout<<"Attempting to add movie with no title, exiting addMovieNode()"<<endl;
 			return;
 		}
 
 		MovieLLNode *llNode = new MovieLLNode(ranking, title, releaseYear, quantity);
-		
+
+		//see if BST is empty		
 		if(root == NULL){
 			if(DEBUG) cout<<"Root is null, adding "<<title<<endl;
 			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
 			root = bstNode;
+			//since BST is empty, so is its LL
 			bstNode->head = llNode;
 			if(DEBUG) cout<<endl;
 			return;
@@ -137,31 +142,54 @@ class MovieTree {
 
 		if(DEBUG) cout<<"root isn't null"<<endl;
 
+		//search for BSTNode, returning the node if it's found, the parent of where it should be added if not
 		MovieBSTNode *search = searchBST(root, title[0]);
 		if(search->letter == title[0]){
+			//letter is found
 			if(DEBUG) cout<<"Node found, adding "<<title<<" to LL"<<endl;
-			if(search->head == NULL){
-				if(DEBUG) cout<<"Head is null, setting "<<title<<" to head"<<endl;
-				search->head = llNode;
-			}
-			else{
-				if(DEBUG) cout<<"Head isn't NULL, adding "<<title<<" to LL"<<endl;
-				MovieLLNode *tmp = searchLL(search->head, title);
-				if(tmp->title == title) tmp->quantity += quantity;
-				else tmp->next = llNode;
-			}
+			addToLL(search->head, llNode);
 		}else{
 			if(DEBUG) cout<<"Node not found, making bstNode for "<<title<<endl;
 			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
+			//swap out null of BST for the parent found in search
 			if(title[0] < search->letter){
+				if(DEBUG) cout<<"Adding letter to left"<<endl;
 				search->left = bstNode;
 			} else {
+				if(DEBUG) cout<<"Adding letter to right"<<endl;
 				search->right = bstNode;
 			}
+			//setting bstNode parent to search result
+			bstNode->parent = search;
+			if(DEBUG) cout<<"Setting bstNode parent to "<<search->letter<<endl;
 			if(DEBUG) cout<<"Adding llNode as head"<<endl;
+			//since bstNode is added, head is NULL
 			bstNode->head = llNode;
 		}
 		if(DEBUG) cout<<endl;
+	}
+	void addToLL(MovieLLNode* head, MovieLLNode* node){
+		if(DEBUG) cout<<"adding to LL"<<endl;
+		MovieLLNode* tmp = head;
+		if(head == NULL){
+			if(DEBUG) cout<<"LL head is NULL, setting node as head"<<endl;
+			head = node;
+			return;
+		}
+		while(tmp != NULL){
+			if(tmp->title == node->title){
+				if(DEBUG) cout<<"title already exists, adding to quantity"<<endl;
+				tmp->quantity += node->quantity;
+				return;
+			}
+			if(tmp->next == NULL){
+				if(DEBUG) cout<<"title not found, adding to end"<<endl;
+				tmp->next = node;
+				return;
+			}
+			tmp = tmp->next;
+		}
+
 	}
 	void findMovie(string title){
 		//BST search to find the node starting from the first letter of title
