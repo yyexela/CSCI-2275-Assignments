@@ -43,7 +43,20 @@ struct MovieBSTNode{
 		this->letter = letter;
 		this->parent = NULL;
 		this->left = NULL;
+		this->right = NULL;
 		this->head = NULL;
+	}
+	//prints the LL starting from head
+	void printLL(){
+		MovieLLNode *tmp = head;
+		cout<<"LL for BST \'"<<letter<<"\'"<<endl<<endl;
+		if(tmp == NULL){
+			cout<<"Empty LL"<<endl;
+		} else while(tmp != NULL) {
+			tmp->printInfo();
+			cout<<endl;
+			tmp = tmp->next;
+		}
 	}
 };
 
@@ -60,6 +73,9 @@ class MovieTree {
 	void printMovieInventory(MovieBSTNode * node){
 		//this is a recursive function to print in-order
 		//you need to print entire LL attached to a particular node
+		if(node->left != NULL) printMovieInventory(node->left);
+		if(node != NULL) node->printLL();
+		if(node->right != NULL) printMovieInventory(node->right);
 	}
 	void countMovieNodes(MovieBSTNode *node, int &count){
 		//write recursive function
@@ -99,12 +115,14 @@ class MovieTree {
 	}
 	void printMovieInventory(){
 		//call private function printMovieInventory() with root of the node as parameter and do in-order traversal
+		printMovieInventory(root);
 	}
 	int countMovieNodes(){
 		//call private function countMovieNodes() with root and variable count=0
 		//(count is passed by refference see the private function definition)
 	}
 	void deleteMovieNode(string title){
+		if(DEBUG) cout<<"Called deleteMovieNode"<<endl;
 		//search the node starting with first letter of title
 		//call the private function searchBST that returns the BST node
 
@@ -181,6 +199,9 @@ class MovieTree {
 		if(head == NULL){
 			if(DEBUG) cout<<"LL head is NULL, setting node as head"<<endl;
 			head = node;
+			if(DEBUG){
+				cout<<"count: "<<1<<endl;
+			}
 			return;
 		}
 		while(tmp != NULL){
@@ -238,8 +259,11 @@ class MovieTree {
 			MovieLLNode* tmp = findMovie(search->head, title);
 			if(tmp != NULL){
 				tmp->printInfo();
-				//check if quantity is 0, if it is, deleteNode()
 				--(tmp->quantity);
+				//check if quantity is 0, if it is, deleteNode()
+				if(tmp->quantity <= 0){
+					deleteMovieNode(title);
+				}
 			} else {
 				cout<<"Movie not found"<<endl;
 				if(DEBUG) cout<<"in LL"<<endl;
@@ -316,6 +340,7 @@ int main(int argc, char* argv[]) {
 				mt.rentMovie(str1);
 				break;
 			case 3:
+				mt.printMovieInventory();
 				break;
 			case 4:
 				break;
