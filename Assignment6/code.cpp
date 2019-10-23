@@ -15,11 +15,18 @@ struct MovieLLNode{
 	//this is constructor
 	MovieLLNode(){};
 	MovieLLNode(int ranking, string title, int year_released, int quantity){
-	this->imdb_ranking = ranking;
-	this->title = title;
-	this->year_released = year_released;
-	this->quantity = quantity;
-	this->next = NULL;
+		this->imdb_ranking = ranking;
+		this->title = title;
+		this->year_released = year_released;
+		this->quantity = quantity;
+		this->next = NULL;
+	}
+	//prints the information of the LLNode
+	void printInfo(){
+		cout<<"Ranking: "<<imdb_ranking<<endl;
+		cout<<"Title: "<<title<<endl;
+		cout<<"Released: "<<year_released<<endl;
+		cout<<"Quantity: "<<quantity<<endl;
 	}
 };
 
@@ -191,10 +198,34 @@ class MovieTree {
 		}
 
 	}
+	MovieLLNode* findMovie(MovieLLNode* head, string title){
+		MovieLLNode* tmp = head;
+		while(tmp != NULL){
+			if(tmp->title == title){
+				return tmp;
+			}
+			tmp = tmp->next;
+		}
+		return tmp;
+	}
 	void findMovie(string title){
 		//BST search to find the node starting from the first letter of title
 		//then once you find BST node, traverse to the LL attached to it to find the node with title and display information 
 		//if nothign is found print "Movie not found"
+		MovieBSTNode *search = searchBST(root, title[0]);
+		if(title[0] == search->letter){
+			MovieLLNode* tmp = findMovie(search->head, title);
+			if(tmp != NULL){
+				tmp->printInfo();
+			} else {
+				cout<<"Movie not found"<<endl;
+				if(DEBUG) cout<<"in LL"<<endl;
+			}
+		} else {
+			cout<<"Movie not found"<<endl;
+			if(DEBUG) cout<<"in BST"<<endl;
+		}
+		cout<<endl;
 	}
 	void rentMovie(string title){
 		//Find node in BST for the first letter of title
@@ -250,13 +281,17 @@ void printMenu(){
 int main(int argc, char* argv[]) {
 	const string FILE = "Assignment6Movies.txt";
 	MovieTree mt(FILE);
-	string option = "";
+	string option = "", str1 = "";
 	do{
-		option = "";
+		option = str1 = "";
 		printMenu();
 		while(!getNum(option));
 		switch(stoi(option)){
 			case 1:
+				cout<<endl<<"Enter a title to search for: "<<endl;
+				getline(cin, str1);
+				cout<<endl;
+				mt.findMovie(str1);
 				break;
 			case 2:
 				break;
