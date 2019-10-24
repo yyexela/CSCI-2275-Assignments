@@ -204,8 +204,12 @@ class MovieTree {
 	}
 	void deleteBSTNode(char letter){
 		if(DEBUG) cout<<"Called deleteBSTNode"<<endl;
+		if(root == NULL){
+			cout<<"Root is NULL, exiting"<<endl;
+			return;
+		}
 		MovieBSTNode *search = searchBST(root, letter);
-		//see if the BSTNode was found
+		//see if the BSTNode was found given root != NULL
 		if(search->letter != letter){
 			cout<<"BSTNode not found"<<endl;
 			return;
@@ -215,9 +219,11 @@ class MovieTree {
 			if(DEBUG) cout<<"Deleting root"<<endl;
 			//delete root
 			if(search->left == NULL && search->right == NULL){
+				if(DEBUG) cout<<"Root has no children"<<endl;
 				//root has no children
 				root = NULL;
 			} else if (search->left != NULL && search->right != NULL){
+				if(DEBUG) cout<<"Root two children"<<endl;
 				MovieBSTNode* min = findLeftMostBSTNode(search->right);
 				if(min == search->right){
 					if(DEBUG) cout<<"min is right child of root"<<endl;
@@ -244,8 +250,7 @@ class MovieTree {
 				}
 			}
 			else {
-				if(DEBUG) cout<<"Deleting node with 1 child"<<endl;
-				if(DEBUG) cout<<"letter is root"<<endl;
+				if(DEBUG) cout<<"Root has 1 child"<<endl;
 				if(search->right != NULL){
 					if(DEBUG) cout<<"root left is NULL"<<endl;
 					root = root->right;
@@ -253,6 +258,7 @@ class MovieTree {
 					if(DEBUG) cout<<"root right is NULL"<<endl;
 					root = root->left;
 				}
+				root->parent = NULL;
 			}
 			delete search;
 			return;
@@ -279,49 +285,29 @@ class MovieTree {
 				if(search->letter < search->parent->letter){
 					//search is left child of parent
 					search->parent->left = min;
-					min->parent = search->parent;
-					min->left = search->left;
-					if(min->left != NULL)
-						min->left->parent = min;
-				} else {
+				}else{
 					//search is right child of parent
 					search->parent->right = min;
-					min->parent = search->parent;
-					min->left = search->left;
-					if(min->left != NULL)
-						min->left->parent = min;
 				}
+				min->parent = search->parent;
+				min->left = search->left;
+				if(min->left != NULL)
+					min->left->parent = min;
 			}
 			//min is NOT child of parent
-			else if(search->letter < search->parent->letter){
-				if(DEBUG) cout<<"deleteNode is left of parent"<<endl;
+			else{
+				if(search->letter < search->parent->letter){
+					if(DEBUG) cout<<"deleteNode is left of parent"<<endl;
+					search->parent->left = min;
+				}else{
+					if(DEBUG) cout<<"deleteNode is right of parent"<<endl;
+					search->parent->right = min;
+				}
 				//search is left child of parent
 				min->parent->left = min->right;
 				if(min->right != NULL)
 					min->right->parent = min->parent;
 				min->parent = search->parent;
-				search->parent->left = min;
-				min->left = search->left;
-				min->right = search->right;
-				search->right->parent = min;
-				search->left->parent = min;
-				/*
-				search->parent->left = min;
-				min->parent = search->parent;
-				min->left = search->left;
-				min->left->parent = min;
-				min->right = search->right;
-				min->right->parent = min;
-				minParent->left = NULL;
-				*/
-			} else {
-				if(DEBUG) cout<<"deleteNode is right of parent"<<endl;
-				//search is right child of parent
-				min->parent->left = min->right;
-				if(min->right != NULL)
-					min->right->parent = min->parent;
-				min->parent = search->parent;
-				search->parent->right = min;
 				min->left = search->left;
 				min->right = search->right;
 				search->right->parent = min;
@@ -329,32 +315,25 @@ class MovieTree {
 			}
 		} else {
 			if(DEBUG) cout<<"Deleting node with 1 child"<<endl;
-			if(search->letter < search->parent->letter){
-				if(DEBUG) cout<<"letter is left of parent"<<endl;
-				if(search->right != NULL){
-					if(DEBUG) cout<<"search left is NULL"<<endl;
-					MovieBSTNode* tmp = search->right;
+			if(search->right != NULL){
+				if(DEBUG) cout<<"search left is NULL"<<endl;
+				MovieBSTNode* tmp = search->right;
+				if(search->letter < search->parent->letter){
+					if(DEBUG) cout<<"letter is left of parent"<<endl;
 					search->parent->left = tmp;
-					tmp->parent = search->parent;
 				} else {
-					if(DEBUG) cout<<"search right is NULL"<<endl;
-					MovieBSTNode* tmp = search->left;
-					search->parent->left = tmp;
-					tmp->parent = search->parent;
+					if(DEBUG) cout<<"letter is right of parent"<<endl;
+					search->parent->right = tmp;
 				}
+				tmp->parent = search->parent;
 			} else {
-				if(DEBUG) cout<<"letter is right of parent"<<endl;
-				if(search->right != NULL){
-					if(DEBUG) cout<<"search left is NULL"<<endl;
-					MovieBSTNode* tmp = search->right;
+				if(DEBUG) cout<<"search right is NULL"<<endl;
+				MovieBSTNode* tmp = search->left;
+				if(search->letter < search->parent->letter)
+					search->parent->left = tmp;
+				else
 					search->parent->right = tmp;
-					tmp->parent = search->parent;
-				} else {
-					if(DEBUG) cout<<"search right is NULL"<<endl;
-					MovieBSTNode* tmp = search->left;
-					search->parent->right = tmp;
-					tmp->parent = search->parent;
-				}
+				tmp->parent = search->parent;
 			}
 		}
 		//free memory
@@ -595,6 +574,11 @@ int main(int argc, char* argv[]) {
 				cout<<"Enter char"<<endl;
 				getline(cin, str1);
 				mt.deleteBSTNode(str1[0]);
+				cout<<"InOrder:"<<endl;
+				mt.printLettersInOrder();
+				cout<<"PreOrder:"<<endl;
+				mt.printLettersPreOrder();
+				cout<<endl;
 				break;
 			case 8:
 				cout<<"InOrder:"<<endl;
