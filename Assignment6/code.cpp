@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 struct MovieLLNode{
 	int imdb_ranking;
@@ -23,10 +23,12 @@ struct MovieLLNode{
 	}
 	//prints the information of the LLNode
 	void printInfo(){
+		cout<<"Movie Info:"<<endl;
+		cout<<"==========="<<endl;
 		cout<<"Ranking: "<<imdb_ranking<<endl;
 		cout<<"Title: "<<title<<endl;
 		cout<<"Released: "<<year_released<<endl;
-		cout<<"Quantity: "<<quantity<<endl;
+		cout<<"Quantity: "<<quantity<<endl<<endl;
 	}
 };
 
@@ -49,7 +51,7 @@ struct MovieBSTNode{
 	//prints the LL starting from head
 	void printLL(){
 		MovieLLNode *tmp = head;
-		cout<<"LL for BST \'"<<letter<<"\'"<<endl<<endl;
+		if(DEBUG) cout<<"LL for BST \'"<<letter<<"\'"<<endl<<endl;
 		if(tmp == NULL){
 			cout<<"Empty LL"<<endl;
 		} else while(tmp != NULL) {
@@ -58,18 +60,38 @@ struct MovieBSTNode{
 			tmp = tmp->next;
 		}
 	}
+	//prints the LL starting from head, simplified
+	void printLLSimplified(){
+		MovieLLNode *tmp = head;
+		if(DEBUG) cout<<"Simplified LL for BST \'"<<letter<<"\'"<<endl<<endl;
+		if(tmp == NULL){
+			cout<<"Empty LL"<<endl;
+		} else while(tmp != NULL) {
+			cout<<"Movie: "<<tmp->title<<" "<<tmp->quantity<<endl<<endl;
+			tmp = tmp->next;
+		}
+	}
 };
 
 class MovieTree {
 	MovieBSTNode* treeMinimum(MovieBSTNode *node); //use this to find the left most(or minimum) leaf node of the BST, you'll need this in the delete function
 	MovieBSTNode* root;
-
 	private:
-	void DeleteAll(MovieBSTNode *node){
-    //recursive function to delete all nodes
+	void deleteAll(MovieBSTNode* node){
+		if(node->left != NULL) deleteAll(node->left);
+		if(node->right != NULL) deleteAll(node->right);
+		if(node->left == NULL && node->right == NULL){
+			while(node->head->next != NULL){
+				cout<<"Deleting "<<node->head->title<<endl;
+				deleteMovie(node->head->title);
+			}
+			cout<<"Deleting "<<node->head->title<<endl;
+			deleteMovie(node->head->title);
+		}
+		//recursive function to delete all nodes
 		//same as in-order traversal
 		//instead of printing, you go through the LL pointed by tree node and delete it
-	}  //use this for the post-order traversal deletion of the tree
+	}	//use this for the post-order traversal deletion of the tree
 	void printMovieInventory(MovieBSTNode* node){
 		//this is a recursive function to print in-order
 		//you need to print entire LL attached to a particular node
@@ -141,6 +163,12 @@ class MovieTree {
 		else return(searchBST(node->right, letter));
 		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
 		//use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
+	}void printLettersPreOrder(){
+		if(root != NULL){
+			printLettersPreOrder(root);
+		} else {
+			cout<<"Root is NULL"<<endl;
+		}
 	}
 	//return the node containing title, or NULL if title is not found is NULL
 	MovieLLNode* searchLL(MovieLLNode* head, string title){
@@ -153,7 +181,6 @@ class MovieTree {
 		}
 		return tmp;
 	}
-
 	public:
 	MovieTree(string file){
 		root = NULL;
@@ -161,17 +188,43 @@ class MovieTree {
 		readFile(file);
 	}
 	~MovieTree(){
+		deleteAll(root);
+	}
+	void deleteAll(){
+		deleteAll(root);
+	}
+	void deleteMovie(string movie){
+		if(movie.size() <= 0){
+			cout<<"No movie entered, exiting"<<endl;
+			return;
+		}
+		MovieBSTNode* search = searchBST(root, movie[0]);
+		if(search->letter == movie[0]){
+			MovieLLNode* tmp = search->head;
+			if(tmp->title == movie){
+				if(DEBUG) cout<<"Deleting head of "<<search->letter<<endl;
+				search->head = tmp->next;
+				delete tmp;
+			} else {
+				while(tmp->next->title != movie && tmp->next != NULL){
+					tmp = tmp->next;
+				}
+				if(tmp->next != NULL && tmp->next->title == movie){
+					if(DEBUG) cout<<"Removing movie "<<movie<<endl;
+					MovieLLNode* tmpDel = tmp->next;
+					tmp->next = tmp->next->next;
+					delete tmpDel;
+				}
+			}
+			if(search->head == NULL)
+					deleteBSTNode(movie[0]);
+			}else{
+				cout<<"Movie not found"<<endl;
+			}
 	}
 	void printLettersInOrder(){
 		if(root != NULL){
 			printLettersInOrder(root);
-		} else {
-			cout<<"Root is NULL"<<endl;
-		}
-	}
-	void printLettersPreOrder(){
-		if(root != NULL){
-			printLettersPreOrder(root);
 		} else {
 			cout<<"Root is NULL"<<endl;
 		}
@@ -339,8 +392,7 @@ class MovieTree {
 		//free memory
 		delete search;
 	}
-	void deleteMovieNode(string title){
-		if(DEBUG) cout<<"Called deleteMovieNode"<<endl;
+		
 		//search the node starting with first letter of title
 		//call the private function searchBST that returns the BST node
 
@@ -353,7 +405,7 @@ class MovieTree {
 		//when node has no child
 		//when node has just 1 child
 		//when node has two children: you need to find in-order successor. Use function treeMinimum by passing node's right child
-	}
+	
 	void addMovieNode(int ranking, string title, int releaseYear, int quantity){
 		//    Create MovieLLNode called newMovie to be added to its LL
 		//    Create a BST called newIndex node to be added
@@ -451,20 +503,20 @@ class MovieTree {
 		//BST search to find the node starting from the first letter of title
 		//then once you find BST node, traverse to the LL attached to it to find the node with title and display information 
 		//if nothign is found print "Movie not found"
+		if(root == NULL){
+			cout<<"Root is null, exiting"<<endl;
+			return;
+		}
 		MovieBSTNode *search = searchBST(root, title[0]);
 		if(title[0] == search->letter){
+			//title letter is found
 			MovieLLNode* tmp = findMovie(search->head, title);
 			if(tmp != NULL){
 				tmp->printInfo();
-			} else {
-				cout<<"Movie not found"<<endl;
-				if(DEBUG) cout<<"in LL"<<endl;
+				return;
 			}
-		} else {
-			cout<<"Movie not found"<<endl;
-			if(DEBUG) cout<<"in BST"<<endl;
 		}
-		cout<<endl;
+		cout<<"Movie not found"<<endl<<endl;
 	}
 	void rentMovie(string title){
 		//Find node in BST for the first letter of title
@@ -472,25 +524,27 @@ class MovieTree {
 		//if BST index is found, search for the movie title in the LL pointed by BST node
 		//Print the LL node information and decrease its quantity
 		//if quantity is 0, call deleteMovieNode() to delete a LL node with the title
+		if(root == NULL){
+			cout<<"Root is NULL, exiting"<<endl;
+			return;
+		}
 		MovieBSTNode *search = searchBST(root, title[0]);
 		if(title[0] == search->letter){
+			//movie letter is found
 			MovieLLNode* tmp = findMovie(search->head, title);
 			if(tmp != NULL){
-				tmp->printInfo();
 				--(tmp->quantity);
+				tmp->printInfo();
 				//check if quantity is 0, if it is, deleteNode()
 				if(tmp->quantity <= 0){
-					deleteMovieNode(title);
+					deleteMovie(title);
 				}
-			} else {
-				cout<<"Movie not found"<<endl;
-				if(DEBUG) cout<<"in LL"<<endl;
+				if(search->head == NULL)
+					deleteBSTNode(search->letter);
+				return;
 			}
-		} else {
-			cout<<"Movie not found"<<endl;
-			if(DEBUG) cout<<"in BST"<<endl;
 		}
-		cout<<endl;
+		cout<<"Movie not found"<<endl<<endl;
 	}
 	void printMenu(){
 		//just prints the menu
@@ -534,8 +588,12 @@ void printMenu(){
 	cout<<"4. Delete a movie"<<endl;
 	cout<<"5. Count the movies"<<endl;
 	cout<<"6. Quit"<<endl;
-	cout<<"7. Delete Letter"<<endl;
-	cout<<"8. Print Letters"<<endl;
+	/*
+	cout<<"7. Delete All"<<endl;
+	cout<<"8. Print Pre Order"<<endl;
+	cout<<"9. Print LL of char"<<endl;
+	cout<<"10. Delete Movie"<<endl;
+	*/
 }
 
 int main(int argc, char* argv[]) {
@@ -563,33 +621,37 @@ int main(int argc, char* argv[]) {
 				mt.printMovieInventory();
 				break;
 			case 4:
+				cout<<"Enter name of a movie to delete:"<<endl;
+				getline(cin, str1);
+				mt.deleteMovie(str1);
+				cout<<endl;
 				break;
 			case 5:
-				cout<<endl<<"Movies: "<<mt.countMovieNodes()<<endl<<endl;
+				cout<<endl<<"Tree contains: "<<mt.countMovieNodes()<<" movies"<<endl<<endl;
 				break;
 			case 6:
 				cout<<"Exiting program"<<endl;
 				break;
+				/*
 			case 7:
-				cout<<"Enter char"<<endl;
-				getline(cin, str1);
-				mt.deleteBSTNode(str1[0]);
-				cout<<"InOrder:"<<endl;
-				mt.printLettersInOrder();
-				cout<<"PreOrder:"<<endl;
-				mt.printLettersPreOrder();
-				cout<<endl;
+				cout<<"Delete All"<<endl;
+				mt.deleteAll();
 				break;
 			case 8:
-				cout<<"InOrder:"<<endl;
-				mt.printLettersInOrder();
-				cout<<"PreOrder:"<<endl;
 				mt.printLettersPreOrder();
-				cout<<endl;
+				break;
+			case 9:
+				cout<<"Print which LL?"<<endl;
+				getline(cin, str1);
+				if(mt.searchBST(mt.root, str1[0])->letter == str1[0]){
+					mt.searchBST(mt.root, str1[0])->printLL();
+				}
+				*/
 				break;
 			default:
 				cout<<"Invalid option"<<endl<<endl;
 		}
 	} while (stoi(option) != 6);
+	cout<<"Goodbye!"<<endl;
 	return 0;
 }
