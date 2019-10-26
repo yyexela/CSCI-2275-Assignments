@@ -1,3 +1,9 @@
+/* Alexey Yermakov
+ * CSCI 2275
+ * October 29, 2019
+ * Assignment 6
+ */
+
 #include<iostream>
 #include<string>
 #include<fstream>
