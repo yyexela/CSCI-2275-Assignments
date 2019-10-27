@@ -10,15 +10,19 @@
 
 using namespace std;
 
+//prints additional statements when true
 const bool DEBUG = false;
 
+//node for the linked-list in each BST node
 struct MovieLLNode{
+	//member variables
 	int imdb_ranking;
 	string title;
 	int year_released;
 	int quantity;
 	MovieLLNode *next;
-	//this is constructor
+
+	//constructors
 	MovieLLNode(){};
 	MovieLLNode(int ranking, string title, int year_released, int quantity){
 		this->imdb_ranking = ranking;
@@ -27,7 +31,9 @@ struct MovieLLNode{
 		this->quantity = quantity;
 		this->next = NULL;
 	}
-	//prints the information of the LLNode
+
+	//functions
+	//prints the information of the current node
 	void printInfo(){
 		cout<<"Movie Info:"<<endl;
 		cout<<"==========="<<endl;
@@ -38,14 +44,16 @@ struct MovieLLNode{
 	}
 };
 
+//node for the BST
 struct MovieBSTNode{
+	//member variables
 	char letter;
 	MovieBSTNode *parent;
 	MovieBSTNode *left;
 	MovieBSTNode *right;
-	//pointer to the head of the list of the movies starting with letter MovieFirstLetter
-	MovieLLNode *head;
-	//constructor 
+	MovieLLNode *head; //head points to the first node in the linkedk list
+
+	//constructors
 	MovieBSTNode(){};
 	MovieBSTNode(char letter){
 		this->letter = letter;
@@ -54,7 +62,9 @@ struct MovieBSTNode{
 		this->right = NULL;
 		this->head = NULL;
 	}
-	//prints the LL starting from head
+
+	//functions
+	//prints the linked list starting from head by calling the LLNode print() function
 	void printLL(){
 		MovieLLNode *tmp = head;
 		if(DEBUG) cout<<"LL for BST \'"<<letter<<"\'"<<endl<<endl;
@@ -66,7 +76,8 @@ struct MovieBSTNode{
 			tmp = tmp->next;
 		}
 	}
-	//prints the LL starting from head, simplified
+
+	//prints the linked list node movie title and quantities only
 	void printLLSimplified(){
 		MovieLLNode *tmp = head;
 		if(DEBUG) cout<<"Simplified LL for BST \'"<<letter<<"\'"<<endl<<endl;
@@ -79,10 +90,16 @@ struct MovieBSTNode{
 	}
 };
 
+//class for the movie tree containing BST nodes which contains LL nodes
 class MovieTree {
+	private:
+	//member variables
 	MovieBSTNode* treeMinimum(MovieBSTNode *node); //use this to find the left most(or minimum) leaf node of the BST, you'll need this in the delete function
 	MovieBSTNode* root;
-	private:
+
+	//functions
+	//recursively deletes the nodes of the tree bottom up
+	//by deleting the entirity of the LL, deleteMovie() also removes the BST node
 	void deleteAll(MovieBSTNode* node){
 		if(node->left != NULL) deleteAll(node->left);
 		if(node->right != NULL) deleteAll(node->right);
@@ -94,17 +111,17 @@ class MovieTree {
 			cout<<"Deleting "<<node->head->title<<endl;
 			deleteMovie(node->head->title);
 		}
-		//recursive function to delete all nodes
-		//same as in-order traversal
-		//instead of printing, you go through the LL pointed by tree node and delete it
-	}	//use this for the post-order traversal deletion of the tree
+	}
+
+	//prints every linked list in the BST, recursive and in-order traversal
 	void printMovieInventory(MovieBSTNode* node){
-		//this is a recursive function to print in-order
-		//you need to print entire LL attached to a particular node
 		if(node->left != NULL) printMovieInventory(node->left);
 		if(node != NULL) node->printLL();
 		if(node->right != NULL) printMovieInventory(node->right);
 	}
+
+	//prints the letters of the BST nodes in order recursively
+	//includes the parent letter, left child, and right child
 	void printLettersInOrder(MovieBSTNode* node){
 		if(node->left != NULL) printLettersInOrder(node->left);
 		if(node != NULL){
@@ -125,6 +142,9 @@ class MovieTree {
 		}
 		if(node->right != NULL) printLettersInOrder(node->right);
 	}
+
+	//prints the letters of the BST nodes pre order recursively
+	//includes the parent letter, left child, and right child
 	void printLettersPreOrder(MovieBSTNode* node){
 		if(node != NULL){
 			cout<<node->letter<<": ";
@@ -145,6 +165,9 @@ class MovieTree {
 		if(node->left != NULL) printLettersPreOrder(node->left);
 		if(node->right != NULL) printLettersPreOrder(node->right);
 	}
+
+	//counts the number of movies by traversing the BST and then each LL
+	//adding to the count variable passed in by reference recursively pre-order
 	void countMovieNodes(MovieBSTNode *node, int &count){
 		MovieLLNode *tmp = node->head;
 		while(tmp != NULL){
@@ -155,11 +178,10 @@ class MovieTree {
 			countMovieNodes(node->left, count);
 		if(node->right != NULL)
 			countMovieNodes(node->right, count);
-		//write recursive function
-		//recurstion is same as in-order traversal, 
-		//instead of printing value you have to increase count by traversing the LL attached to the node
 	}
-	//parent if node is not found, or the node if the letter is found
+
+	//returns the parent node of the BST if the passed in letter were to be added
+	//or the node itself if the letter is found (ie. it already exists)
 	MovieBSTNode* searchBST(MovieBSTNode *node, char letter){
 		if((node->left == NULL && letter < node->letter)
 			|| (node->right == NULL && node->letter < letter)
@@ -167,19 +189,12 @@ class MovieTree {
 				return node;
 		else if(letter < node->letter) return(searchBST(node->left, letter));
 		else return(searchBST(node->right, letter));
-		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
-		//use this recursive function to find a pointer to a node in the BST, given a MOVIE TITLE first letter
-	}void printLettersPreOrder(){
-		if(root != NULL){
-			printLettersPreOrder(root);
-		} else {
-			cout<<"Root is NULL"<<endl;
-		}
 	}
-	//return the node containing title, or NULL if title is not found is NULL
+	
+	//return the LL node containing title in the given LL, or NULL if title is not found
+	//assumes that the head of the LL given will contain the title (same first letter)
+	//same as findMovie
 	MovieLLNode* searchLL(MovieLLNode* head, string title){
-		//this is used by findMovie, deleteMovieNode, rentMovie so that you do not have to repeat this function
-		//use this to return a pointer to a node in a linked list, given a MOVIE TITLE and the head of the linked list
 		MovieLLNode *tmp = head;
 		while(tmp != NULL){
 			if(tmp->title == title) return tmp;
@@ -187,18 +202,27 @@ class MovieTree {
 		}
 		return tmp;
 	}
+
 	public:
+	//constructor, requires file name to build the tree
 	MovieTree(string file){
 		root = NULL;
 		if(DEBUG) cout<<"Root set to NULL"<<endl;
 		readFile(file);
 	}
+
+	//destructor, removes all of the nodes in the tree
 	~MovieTree(){
 		deleteAll(root);
 	}
+
+	//calls the recursive deleteAll function from root
 	void deleteAll(){
 		deleteAll(root);
 	}
+
+	//deletes a movie from the BST tree by searchingn by the first letter
+	//and then through the linked list of the BST node
 	void deleteMovie(string movie){
 		if(movie.size() <= 0){
 			cout<<"No movie entered, exiting"<<endl;
@@ -228,6 +252,9 @@ class MovieTree {
 				cout<<"Movie not found"<<endl;
 			}
 	}
+
+	//calls the recursive function printLettersInOrder()
+	//checks if root is NULL first
 	void printLettersInOrder(){
 		if(root != NULL){
 			printLettersInOrder(root);
@@ -235,16 +262,30 @@ class MovieTree {
 			cout<<"Root is NULL"<<endl;
 		}
 	}
+
+	//used to call the recursive printLettersPreOrder()
+	//checks if root is NULL first
+	void printLettersPreOrder(){
+		if(root != NULL){
+			printLettersPreOrder(root);
+		} else {
+			cout<<"Root is NULL"<<endl;
+		}
+	}
+	
+	//calls the printMovieInventory() recursive function with root
+	//as the starting BST node
 	void printMovieInventory(){
-		//call private function printMovieInventory() with root of the node as parameter and do in-order traversal
 		if(root != NULL){
 			printMovieInventory(root);
 		} else {
 			cout<<"Root is NULL"<<endl;
 		}
 	}
+
+	//call the recursive function countMovieNodes() with 
+	//root as the starting BST node and variable count=0 (passed by reference)
 	int countMovieNodes(){
-		//call private function countMovieNodes() with root and variable count=0
 		if(root != NULL){
 			int count = 0;
 			countMovieNodes(root, count);
@@ -252,8 +293,9 @@ class MovieTree {
 		} else {
 			cout<<"Root is NULL"<<endl;
 		}
-		//(count is passed by refference see the private function definition)
 	}
+
+	//by passing in the right child of a BST node, return the left-most child
 	MovieBSTNode* findLeftMostBSTNode(MovieBSTNode* node){
 		MovieBSTNode* tmp = node;
 		while(tmp->left != NULL){
@@ -261,6 +303,8 @@ class MovieTree {
 		}
 		return tmp;
 	}
+
+	//deletes a BST node from a tree and updates it
 	void deleteBSTNode(char letter){
 		if(DEBUG) cout<<"Called deleteBSTNode"<<endl;
 		if(root == NULL){
@@ -287,7 +331,7 @@ class MovieTree {
 				if(min == search->right){
 					if(DEBUG) cout<<"min is right child of root"<<endl;
 					//min is right child of search, left child won't be an option ever
-					//Remember, search is root so don't need to check if it's
+					//remember, search is root so don't need to check if it's
 					//right or left of parent
 					min->left = root->left;
 					min->left->parent = min;
@@ -398,28 +442,11 @@ class MovieTree {
 		//free memory
 		delete search;
 	}
-		
-		//search the node starting with first letter of title
-		//call the private function searchBST that returns the BST node
 
-		//call the private function searchLL to search in the LL attached to BST node found above
-		//delete this LL node searched above
-
-		//if movie to be deleted is head of the LL, Delete BST node as well
-		//NOTE: you are given nodes parent pointer too
-		//Depending on 3 conditions:
-		//when node has no child
-		//when node has just 1 child
-		//when node has two children: you need to find in-order successor. Use function treeMinimum by passing node's right child
-	
+	//creates a BST node for the first letter of the movie if it doesn't exist,
+	//else it finds the BST node
+	//in both situations it adds a new LL node to a BST node to the back of the LL
 	void addMovieNode(int ranking, string title, int releaseYear, int quantity){
-		//    Create MovieLLNode called newMovie to be added to its LL
-		//    Create a BST called newIndex node to be added
-		//    If BST is empty, set newIndex as root and set newMovie as head
-		//    Find if newIndex is already in BST, add newMovie to the LL pointed by newIndex alphabetically
-		//    if newIndex is not already present, add it in appropriate postition and set newMovie as head
-		//    remeber you are given a parent pointer too, so you need to set parent too
-
 		if(DEBUG) cout<<"Calling addMovieNode"<<endl;
 
 		//return if title size doesn't exist
@@ -460,6 +487,7 @@ class MovieTree {
 				if(DEBUG) cout<<"Adding letter to right"<<endl;
 				search->right = bstNode;
 			}
+
 			//setting bstNode parent to search result
 			bstNode->parent = search;
 			if(DEBUG) cout<<"Setting bstNode parent to "<<search->letter<<endl;
@@ -469,6 +497,8 @@ class MovieTree {
 		}
 		if(DEBUG) cout<<endl;
 	}
+
+	//add an LL node in order of addition, new nodes pushed to back
 	void addToLL(MovieLLNode* head, MovieLLNode* node){
 		if(DEBUG) cout<<"adding to LL"<<endl;
 		MovieLLNode* tmp = head;
@@ -476,7 +506,7 @@ class MovieTree {
 			if(DEBUG) cout<<"LL head is NULL, setting node as head"<<endl;
 			head = node;
 			if(DEBUG){
-				cout<<"count: "<<1<<endl;
+				cout<<"count: 1"<<endl;
 			}
 			return;
 		}
@@ -493,8 +523,10 @@ class MovieTree {
 			}
 			tmp = tmp->next;
 		}
-
 	}
+
+	//searches through LL given head for a movie by an input string and returns the LL node
+	//same as searchLL
 	MovieLLNode* findMovie(MovieLLNode* head, string title){
 		MovieLLNode* tmp = head;
 		while(tmp != NULL){
@@ -505,10 +537,11 @@ class MovieTree {
 		}
 		return tmp;
 	}
+
+	//prints all of the movie info of a given title string
+	//searches for a BST node given the first character of the title
+	//then searches through the LL
 	void findMovie(string title){
-		//BST search to find the node starting from the first letter of title
-		//then once you find BST node, traverse to the LL attached to it to find the node with title and display information 
-		//if nothign is found print "Movie not found"
 		if(root == NULL){
 			cout<<"Root is null, exiting"<<endl;
 			return;
@@ -524,12 +557,13 @@ class MovieTree {
 		}
 		cout<<"Movie not found"<<endl<<endl;
 	}
+
+	//find node in BST for the first letter of title
+	//if no node found in BST print "Movie Not Found."
+	//if BST index is found, search for the movie title in the LL pointed by BST node
+	//print the LL node information and decrease its quantity
+	//if quantity is 0, call deleteMovieNode() to delete a LL node with the title
 	void rentMovie(string title){
-		//Find node in BST for the first letter of title
-		//If no node found in BST print "Movie Not Found."
-		//if BST index is found, search for the movie title in the LL pointed by BST node
-		//Print the LL node information and decrease its quantity
-		//if quantity is 0, call deleteMovieNode() to delete a LL node with the title
 		if(root == NULL){
 			cout<<"Root is NULL, exiting"<<endl;
 			return;
@@ -552,12 +586,17 @@ class MovieTree {
 		}
 		cout<<"Movie not found"<<endl<<endl;
 	}
+
+	//prints user menu
 	void printMenu(){
-		//just prints the menu
 	}
+
+
+	//read file 
+	//and call addMovieNode(stoi(rank), title, stoi(year), stoi(quantity))
+	//which adds a BST node to the tree with the first character
+	//and adds an LL node to the BST node
 	void readFile(string file){
-		//read file 
-		//and call addMovieNode(stoi(rank), title, stoi(year), stoi(quantity));
 		ifstream ifs;
 		ifs.open(file);
 		string ranking, title, releaseYear, quantity;
@@ -575,17 +614,19 @@ class MovieTree {
 	}
 };
 
+//used to filter user input to just numbers
 bool getNum(string &option){
         getline(cin, option);
         try{
                 stoi(option);
         }catch(...){
-                cout<<"Invalid input"<<endl;
+                cout<<"Invalid input, enter a number"<<endl;
                 return false;
         };
         return true;
 }
 
+//prints the menu for user selection
 void printMenu(){
 	cout<<"====Main Menu===="<<endl;
 	cout<<"1. Find a movie"<<endl;
@@ -594,7 +635,7 @@ void printMenu(){
 	cout<<"4. Delete a movie"<<endl;
 	cout<<"5. Count the movies"<<endl;
 	cout<<"6. Quit"<<endl;
-	/*
+	/* //additional menu options
 	cout<<"7. Delete All"<<endl;
 	cout<<"8. Print Pre Order"<<endl;
 	cout<<"9. Print LL of char"<<endl;
@@ -602,6 +643,9 @@ void printMenu(){
 	*/
 }
 
+//main function which is run at the start of the program
+//creates a MovieTree object from a file and takes in user commands
+//which perform functions on the tree
 int main(int argc, char* argv[]) {
 	const string FILE = "Assignment6Movies.txt";
 	MovieTree mt(FILE);
@@ -639,7 +683,7 @@ int main(int argc, char* argv[]) {
 				cout<<"Exiting program"<<endl;
 				break;
 				/*
-			case 7:
+			case 7: //additional secret user options
 				cout<<"Delete All"<<endl;
 				mt.deleteAll();
 				break;
@@ -655,7 +699,7 @@ int main(int argc, char* argv[]) {
 				*/
 				break;
 			default:
-				cout<<"Invalid option"<<endl<<endl;
+				cout<<"Invalid menu option"<<endl<<endl;
 		}
 	} while (stoi(option) != 6);
 	cout<<"Goodbye!"<<endl;
