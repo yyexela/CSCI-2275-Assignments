@@ -620,11 +620,6 @@ class MovieTree {
 		cout<<"Movie not found"<<endl<<endl;
 	}
 
-	//prints user menu
-	void printMenu(){
-	}
-
-
 	//read file 
 	//and call addMovieNode(stoi(rank), title, stoi(year), stoi(quantity))
 	//which adds a BST node to the tree with the first character
@@ -645,95 +640,107 @@ class MovieTree {
 			addMovieNode(stoi(ranking), title, stoi(releaseYear), stoi(quantity));
 		}
 	}
+
+	//used to filter user input to just numbers
+	bool getNum(string &option){
+			getline(cin, option);
+			try{
+					stoi(option);
+			}catch(...){
+					cout<<"Invalid input, enter a number"<<endl;
+					return false;
+			};
+			return true;
+	}
+
+	//prints the menu for user selection
+	void printMenu(){
+		cout<<"====Main Menu===="<<endl;
+		cout<<"1. Find a movie"<<endl;
+		cout<<"2. Rent a movie"<<endl;
+		cout<<"3. Print the inventory"<<endl;
+		cout<<"4. Delete a movie"<<endl;
+		cout<<"5. Count the movies"<<endl;
+		cout<<"6. Quit"<<endl;
+		/* //additional menu options
+		cout<<"7. Delete All"<<endl;
+		cout<<"8. Print Pre Order"<<endl;
+		cout<<"9. Print LL of char"<<endl;
+		cout<<"10. Delete Movie"<<endl;
+		*/
+	}
+
+	void prompt(){
+		string option = "", str1 = "";
+		do{
+			option = str1 = "";
+			printMenu();
+			while(!getNum(option));
+			switch(stoi(option)){
+				case 1:
+					cout<<endl<<"Enter a title to search for:"<<endl;
+					getline(cin, str1);
+					cout<<endl;
+					findMovie(str1);
+					break;
+				case 2:
+					cout<<endl<<"Enter a title to rent:"<<endl;
+					getline(cin, str1);
+					cout<<endl;
+					rentMovie(str1);
+					break;
+				case 3:
+					printMovieInventory();
+					break;
+				case 4:
+					cout<<endl<<"Enter name of a movie to delete:"<<endl;
+					getline(cin, str1);
+					deleteMovie(str1);
+					cout<<endl;
+					break;
+				case 5:
+					cout<<endl<<"Tree contains: "<<countMovieNodes()<<" movies"<<endl<<endl;
+					break;
+				case 6:
+					cout<<endl<<"Goodbye!"<<endl<<endl;
+					break;
+					/*
+				case 7: //additional secret user options
+					cout<<"Delete All"<<endl;
+					deleteAll();
+					break;
+				case 8:
+					printLettersPreOrder();
+					break;
+				case 9:
+					cout<<"Print which LL?"<<endl;
+					getline(cin, str1);
+					if(searchBST(mt.root, str1[0])->letter == str1[0]){
+						searchBST(mt.root, str1[0])->printLL();
+					}
+					*/
+					break;
+				default:
+					cout<<"Invalid menu option"<<endl<<endl;
+			}
+		} while (stoi(option) != 6);
+	}
 };
-
-//used to filter user input to just numbers
-bool getNum(string &option){
-        getline(cin, option);
-        try{
-                stoi(option);
-        }catch(...){
-                cout<<"Invalid input, enter a number"<<endl;
-                return false;
-        };
-        return true;
-}
-
-//prints the menu for user selection
-void printMenu(){
-	cout<<"====Main Menu===="<<endl;
-	cout<<"1. Find a movie"<<endl;
-	cout<<"2. Rent a movie"<<endl;
-	cout<<"3. Print the inventory"<<endl;
-	cout<<"4. Delete a movie"<<endl;
-	cout<<"5. Count the movies"<<endl;
-	cout<<"6. Quit"<<endl;
-	/* //additional menu options
-	cout<<"7. Delete All"<<endl;
-	cout<<"8. Print Pre Order"<<endl;
-	cout<<"9. Print LL of char"<<endl;
-	cout<<"10. Delete Movie"<<endl;
-	*/
-}
 
 //main function which is run at the start of the program
 //creates a MovieTree object from a file and takes in user commands
 //which perform functions on the tree
 int main(int argc, char* argv[]) {
-	const string FILE = "Assignment6Movies.txt";
-	MovieTree mt(FILE);
-	string option = "", str1 = "";
-	do{
-		option = str1 = "";
-		printMenu();
-		while(!getNum(option));
-		switch(stoi(option)){
-			case 1:
-				cout<<endl<<"Enter a title to search for:"<<endl;
-				getline(cin, str1);
-				cout<<endl;
-				mt.findMovie(str1);
-				break;
-			case 2:
-				cout<<endl<<"Enter a title to rent:"<<endl;
-				getline(cin, str1);
-				cout<<endl;
-				mt.rentMovie(str1);
-				break;
-			case 3:
-				mt.printMovieInventory();
-				break;
-			case 4:
-				cout<<endl<<"Enter name of a movie to delete:"<<endl;
-				getline(cin, str1);
-				mt.deleteMovie(str1);
-				cout<<endl;
-				break;
-			case 5:
-				cout<<endl<<"Tree contains: "<<mt.countMovieNodes()<<" movies"<<endl<<endl;
-				break;
-			case 6:
-				cout<<endl<<"Goodbye!"<<endl<<endl;
-				break;
-				/*
-			case 7: //additional secret user options
-				cout<<"Delete All"<<endl;
-				mt.deleteAll();
-				break;
-			case 8:
-				mt.printLettersPreOrder();
-				break;
-			case 9:
-				cout<<"Print which LL?"<<endl;
-				getline(cin, str1);
-				if(mt.searchBST(mt.root, str1[0])->letter == str1[0]){
-					mt.searchBST(mt.root, str1[0])->printLL();
-				}
-				*/
-				break;
-			default:
-				cout<<"Invalid menu option"<<endl<<endl;
-		}
-	} while (stoi(option) != 6);
+	if(argc <= 1){
+		const string FILE = "Assignment6Movies.txt";
+		MovieTree mt(FILE);
+		if(DEBUG) cout<<"no input"<<endl;
+		mt.prompt();
+	}
+	else{
+		MovieTree mt(argv[1]);
+		if(DEBUG) cout<<"yes input"<<endl;
+		mt.prompt();
+	}
 	return 0;
 }
