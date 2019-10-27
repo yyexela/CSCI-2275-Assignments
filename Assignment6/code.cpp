@@ -253,7 +253,7 @@ class MovieTree {
 			}
 	}
 
-	//calls the recursive function printLettersInOrder()
+	//calls the recursive function printLettersInOrder()v
 	//checks if root is NULL first
 	void printLettersInOrder(){
 		if(root != NULL){
@@ -475,7 +475,7 @@ class MovieTree {
 		if(search->letter == title[0]){
 			//letter is found
 			if(DEBUG) cout<<"Node found, adding "<<title<<" to LL"<<endl;
-			addToLL(search->head, llNode);
+			addToLLAlphabetical(search->head, llNode);
 		}else{
 			if(DEBUG) cout<<"Node not found, making bstNode for "<<title<<endl;
 			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
@@ -498,8 +498,41 @@ class MovieTree {
 		if(DEBUG) cout<<endl;
 	}
 
+	//add an LL node alphabetically, new nodes pushed to back
+	void addToLLAlphabetical(MovieLLNode* head, MovieLLNode* node){
+		if(DEBUG) cout<<"adding to LL"<<endl;
+		MovieLLNode* tmp = head;
+		if(head == NULL){
+			if(DEBUG) cout<<"LL head is NULL, setting node as head"<<endl;
+			head = node;
+			if(DEBUG){
+				cout<<"count: 1"<<endl;
+			}
+			return;
+		}
+		while(tmp != NULL){
+			if(tmp->title == node->title){
+				if(DEBUG) cout<<"title already exists, adding to quantity"<<endl;
+				tmp->quantity += node->quantity;
+				return;
+			}
+			if(tmp->next == NULL){
+				if(DEBUG) cout<<"title not found, adding to end"<<endl;
+				tmp->next = node;
+				return;
+			}
+			if(node->title < tmp->next->title){
+				if(DEBUG) cout<<"title not found, insert alphabetically"<<endl;
+				node->next = tmp->next;
+				tmp->next = node;
+				return;
+			}
+			tmp = tmp->next;
+		}
+	}
+
 	//add an LL node in order of addition, new nodes pushed to back
-	void addToLL(MovieLLNode* head, MovieLLNode* node){
+	void addToLLLast(MovieLLNode* head, MovieLLNode* node){
 		if(DEBUG) cout<<"adding to LL"<<endl;
 		MovieLLNode* tmp = head;
 		if(head == NULL){
@@ -671,7 +704,7 @@ int main(int argc, char* argv[]) {
 				mt.printMovieInventory();
 				break;
 			case 4:
-				cout<<"Enter name of a movie to delete:"<<endl;
+				cout<<endl<<"Enter name of a movie to delete:"<<endl;
 				getline(cin, str1);
 				mt.deleteMovie(str1);
 				cout<<endl;
@@ -680,7 +713,7 @@ int main(int argc, char* argv[]) {
 				cout<<endl<<"Tree contains: "<<mt.countMovieNodes()<<" movies"<<endl<<endl;
 				break;
 			case 6:
-				cout<<"Exiting program"<<endl;
+				cout<<endl<<"Goodbye!"<<endl<<endl;
 				break;
 				/*
 			case 7: //additional secret user options
@@ -702,6 +735,5 @@ int main(int argc, char* argv[]) {
 				cout<<"Invalid menu option"<<endl<<endl;
 		}
 	} while (stoi(option) != 6);
-	cout<<"Goodbye!"<<endl;
 	return 0;
 }
