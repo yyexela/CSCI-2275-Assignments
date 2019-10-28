@@ -11,7 +11,7 @@
 using namespace std;
 
 //prints additional statements when true
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 //node for the linked-list in each BST node
 struct MovieLLNode{
@@ -116,7 +116,7 @@ class MovieTree {
 	//prints every linked list in the BST, recursive and in-order traversal
 	void printMovieInventory(MovieBSTNode* node){
 		if(node->left != NULL) printMovieInventory(node->left);
-		if(node != NULL) node->printLL();
+		if(node != NULL) node->printLLSimplified();
 		if(node->right != NULL) printMovieInventory(node->right);
 	}
 
@@ -249,7 +249,7 @@ class MovieTree {
 			if(search->head == NULL)
 					deleteBSTNode(movie[0]);
 			}else{
-				cout<<"Movie not found"<<endl;
+				cout<<endl<<"Movie not found"<<endl;
 			}
 	}
 
@@ -475,7 +475,7 @@ class MovieTree {
 		if(search->letter == title[0]){
 			//letter is found
 			if(DEBUG) cout<<"Node found, adding "<<title<<" to LL"<<endl;
-			addToLLAlphabetical(search->head, llNode);
+			addToLLAlphabetical(search->head, llNode, search);
 		}else{
 			if(DEBUG) cout<<"Node not found, making bstNode for "<<title<<endl;
 			MovieBSTNode *bstNode = new MovieBSTNode(title[0]);
@@ -499,36 +499,32 @@ class MovieTree {
 	}
 
 	//add an LL node alphabetically, new nodes pushed to back
-	void addToLLAlphabetical(MovieLLNode* head, MovieLLNode* node){
+	void addToLLAlphabetical(MovieLLNode* head, MovieLLNode* node, MovieBSTNode* bst){
 		if(DEBUG) cout<<"adding to LL"<<endl;
 		MovieLLNode* tmp = head;
 		if(head == NULL){
-			if(DEBUG) cout<<"LL head is NULL, setting node as head"<<endl;
+			if(DEBUG) cout<<"Setting as head, head == NULL"<<endl;
 			head = node;
-			if(DEBUG){
-				cout<<"count: 1"<<endl;
-			}
 			return;
 		}
-		while(tmp != NULL){
-			if(tmp->title == node->title){
-				if(DEBUG) cout<<"title already exists, adding to quantity"<<endl;
-				tmp->quantity += node->quantity;
-				return;
-			}
-			if(tmp->next == NULL){
-				if(DEBUG) cout<<"title not found, adding to end"<<endl;
-				tmp->next = node;
-				return;
-			}
-			if(node->title < tmp->next->title){
-				if(DEBUG) cout<<"title not found, insert alphabetically"<<endl;
+		if(node->title <= head->title){
+			if(DEBUG) cout<<"node->title <= head->title"<<endl;
+			head = node;
+			node->next = tmp;
+			bst->head = head;
+			return;
+		}
+		while(tmp->next != NULL){
+			if(node->title <= tmp->next->title){
+				if(DEBUG) cout<<"Inserting in between"<<endl;
 				node->next = tmp->next;
 				tmp->next = node;
 				return;
 			}
 			tmp = tmp->next;
 		}
+		if(DEBUG) cout<<"Adding to end"<<endl;
+		tmp->next = node;
 	}
 
 	//add an LL node in order of addition, new nodes pushed to back
@@ -662,12 +658,12 @@ class MovieTree {
 		cout<<"4. Delete a movie"<<endl;
 		cout<<"5. Count the movies"<<endl;
 		cout<<"6. Quit"<<endl;
-		/* //additional menu options
+		 //additional menu options
 		cout<<"7. Delete All"<<endl;
 		cout<<"8. Print Pre Order"<<endl;
 		cout<<"9. Print LL of char"<<endl;
 		cout<<"10. Delete Movie"<<endl;
-		*/
+		
 	}
 
 	void prompt(){
@@ -704,7 +700,6 @@ class MovieTree {
 				case 6:
 					cout<<endl<<"Goodbye!"<<endl<<endl;
 					break;
-					/*
 				case 7: //additional secret user options
 					cout<<"Delete All"<<endl;
 					deleteAll();
@@ -715,10 +710,9 @@ class MovieTree {
 				case 9:
 					cout<<"Print which LL?"<<endl;
 					getline(cin, str1);
-					if(searchBST(mt.root, str1[0])->letter == str1[0]){
-						searchBST(mt.root, str1[0])->printLL();
+					if(searchBST(root, str1[0])->letter == str1[0]){
+						searchBST(root, str1[0])->printLL();
 					}
-					*/
 					break;
 				default:
 					cout<<"Invalid menu option"<<endl<<endl;
