@@ -49,12 +49,14 @@ class City{
             int first = line.find('-');
             if(DEBUG) cout<<"first: "<<first<<endl;
 
-            //see if a comma exists in the line
+            //see if a heiphen exists in the line
             if(first == -1){
+                //no heiphen means add the whole line
                 if(DEBUG) cout<<"Adding: "<<line<<endl;
                 vertex *v = new vertex(line);
                 people.push_back(v);
             } else {
+                //yes heiphen means add substring up to the heiphen
                 if(DEBUG) cout<<"Adding: "<<line.substr(0, first)<<endl;
                 vertex *v = new vertex(line.substr(0, first));
                 people.push_back(v);
@@ -62,7 +64,7 @@ class City{
             if(DEBUG) cout<<endl;
         }
 
-        //reset ifs
+        //reset ifs to read from the top
         ifs.close();
         ifs.open(FILE);
 
@@ -70,7 +72,7 @@ class City{
         while(ifs.good()){
             string name = "";
 
-            //get the line as a string and the first and last index of commas
+            //get the line as a string and the first and last index of heiphen and commas
             ifs >> line;
             if(DEBUG) cout<<"Working with: "<<line<<endl;
             int first = line.find('-');
@@ -84,19 +86,13 @@ class City{
             if(first == -1){
                 if(DEBUG) cout<<"Not doing anything"<<endl;
             } else if(last == -1){
-                //see if there is only one neighbor
+                //see if there is only one neighbor (no commas but there is a hyphen)
                 name = line.substr(first+1); 
                 if(DEBUG) cout<<"Last = -1, Adding: "<<name<<endl;
-
-                string s = name;
-                if (!s.empty() && s[s.length()-1] == '\n') {
-                    if(DEBUG) cout<<"Newline encountered"<<endl;
-                    s.erase(s.length()-1);
-                }
-                
                 vertex *v2 = find(name);
                 v->adjacency.push_back(v2);
             } else {
+                //keep adding neighbors comma delimeted
                 while(first != last){
                     int next = line.find(',', first+1);
                     name = line.substr(first+1, next-(first+1));
@@ -134,6 +130,21 @@ class City{
     }
 
     //prints the adjacency list of the graph
+    bool areFriends(string name1, string name2){
+        for(auto i = people.begin(); i != people.end(); ++i){
+            vertex *v = *i;
+            if(v->name == name1 || v->name == name2){
+                for(auto j = v->adjacency.begin(); j != v->adjacency.end(); ++j){
+                    vertex *v2 = *j; 
+                    if( (*j)->name == name1 || (*j)->name == name2 ) return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    //prints the adjacency list of the graph
     void printGraph(){
         for(auto i = people.begin(); i != people.end(); ++i){
             vertex *v = *i;
@@ -156,19 +167,18 @@ void printMenu(){
     cout<<"3. Print groups"<<endl;
     cout<<"4. Find the least number of inductions required"<<endl;
     cout<<"5. Quit"<<endl;
-    if(DEBUG) cout<<"6. Print graph"<<endl;
 }
 
 //used to filter user input to just numbers
 bool getNum(string &option){
-        getline(cin, option);
-        try{
-                stoi(option);
-        }catch(...){
-                cout<<endl<<"Invalid input, enter a number"<<endl<<endl;
-                return false;
-        };
-        return true;
+    getline(cin, option);
+    try{
+            stoi(option);
+    }catch(...){
+            cout<<endl<<"Invalid input, enter a number"<<endl<<endl;
+            return false;
+    };
+    return true;
 }
 
 int main(){
@@ -178,15 +188,29 @@ int main(){
     //build the graph
     city.buildGraph(FILE);
 
-    string option = "";
+    string option = "", str1 = "", str2 = "";
     do{
-        option = "";
+        str1 = str2 = option = "";
         printMenu();
         while(!getNum(option));
+        cout<<endl;
         switch(stoi(option)){
             case 1:
+                city.printGraph();
                 break;
             case 2:
+                cout<<"Enter friend 1: "<<endl;
+                cin>>str1;
+                cout<<endl<<"Enter friend 2: "<<endl;
+                cin>>str2;
+                cout<<endl;
+                if(city.areFriends(str1, str2)){
+                    cout<<"They know each other"<<endl;
+                } else {
+                    cout<<"They do not know each other"<<endl;
+                }
+                cout<<endl;
+                cin.ignore();
                 break;
             case 3:
                 break;
@@ -196,7 +220,6 @@ int main(){
                 break;
             if(DEBUG){
                 case 6:
-                    city.printGraph();
                     break;
             }
             default:
