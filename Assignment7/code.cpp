@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 struct vertex{
     string name;
@@ -167,11 +167,13 @@ class City{
             for(auto j = v->adjacency.begin(); j != v->adjacency.end(); ++j){
                 vertex *v2 = *j; 
                 v2->visited = false;
+                v2->path = "";
+                v2->distance = 0;
             }
         }
     }
 
-    //prints the group IDs
+    //prints the group IDs and people in them
     void printGroups(){
         //DFT using a vector that acts as a stack
         vector<vertex*> stack;
@@ -198,6 +200,43 @@ class City{
                         (*j)->visited = true;
                         stack.push_back(*j);
                     }
+                }
+            }
+        }
+    }
+
+    //prints shortest path, if any, between two people
+    void lstNumIntro(string name1, string name2){
+        vector<vertex*> queue;
+        if(people.size() <= 0) return;
+        //push back first person
+        vertex* v1 = find(name1);
+        //check if name exists;
+        if(v1 == NULL) return;
+        if(DEBUG) cout<<"Initial push "<<v1->name<<endl;
+        queue.push_back(v1);
+        v1->visited = true;
+        //update source information
+        string path = v1->name;
+        v1->path = path;
+        v1->distance = 0;
+        while(queue.size() > 0){
+            v1 = *queue.begin();
+            queue.erase(queue.begin());
+            for(auto i = v1->adjacency.begin(); i != v1->adjacency.end(); ++i){
+                if(!(*i)->visited){
+                    if(DEBUG) cout<<"Additional push "<<(*i)->name<<endl;
+                    //update information
+                    (*i)->visited = true;
+                    (*i)->path = v1->path + "," + ((*i)->name);
+                    (*i)->distance = v1->distance + 1;
+                    queue.push_back(*i);
+                }
+                if((*i)->name == name2){
+                    cout<<"Path from "<<name1<<" to "<<name2<<" is: "<<((*i)->path)<<endl;
+                    cout<<"Distance is "<<(*i)->distance<<endl;
+                    cout<<endl;
+                    return;
                 }
             }
         }
@@ -243,9 +282,9 @@ int main(){
                 city.printGraph();
                 break;
             case 2:
-                cout<<"Enter friend 1: "<<endl;
+                cout<<"enter friend 1: "<<endl;
                 cin>>str1;
-                cout<<endl<<"Enter friend 2: "<<endl;
+                cout<<endl<<"enter friend 2: "<<endl;
                 cin>>str2;
                 cout<<endl;
                 if(city.areFriends(str1, str2)){
@@ -261,11 +300,17 @@ int main(){
                 city.resetVisited();
                 break;
             case 4:
-                break;
-            case 5:
+                cout<<"enter friend 1: "<<endl;
+                cin>>str1;
+                cout<<endl<<"enter friend 2: "<<endl;
+                cin>>str2;
+                cout<<endl;
+                city.lstNumIntro(str1, str2);
+                city.resetVisited();
+                cin.ignore();
                 break;
             if(DEBUG){
-                case 6:
+                case 5:
                     break;
             }
             default:
