@@ -40,21 +40,108 @@ class City{
         ifstream ifs(FILE);
         string line;
         int first, last;
+
+        //add initial vectors to the people vector
         while(ifs.good()){
             //get the line as a string and the first and last index of commas
-            getline(ifs, line);
-            if(DEBUG) cout<<"Working with: "<<line<<endl;
-            int first = line.find(',');
-            int last = line.rfind(',');
-            if(DEBUG) cout<<"first: "<<first<<" last: "<<last<<endl;
+            ifs >> line;
+            if(DEBUG) cout<<"Working with: "<<line<<" size: "<<line.size()<<endl;
+            int first = line.find('-');
+            if(DEBUG) cout<<"first: "<<first<<endl;
 
             //see if a comma exists in the line
             if(first == -1){
+                if(DEBUG) cout<<"Adding: "<<line<<";"<<endl;
                 vertex *v = new vertex(line);
                 people.push_back(v);
-                continue;
+            } else {
+                if(DEBUG) cout<<"Adding: "<<line.substr(0, first)<<";"<<endl;
+                vertex *v = new vertex(line.substr(0, first));
+                people.push_back(v);
             }
-            while(first != last);
+            if(DEBUG) cout<<endl;
+        }
+
+        //reset ifs
+        ifs.close();
+        ifs.open(FILE);
+
+        //build the adjacency list
+        while(ifs.good()){
+            string name = "";
+
+            //get the line as a string and the first and last index of commas
+            ifs >> line;
+            if(DEBUG) cout<<"Working with: "<<line<<endl;
+            int first = line.find('-');
+            int last = line.rfind(',');
+            if(DEBUG) cout<<"first: "<<first<<" last: "<<last<<endl;
+
+            //find the vertex to build edges with
+            vertex *v = find(line.substr(0, first));
+
+            //see if a comma exists in the line
+            if(first == -1){
+                if(DEBUG) cout<<"Not doing anything"<<endl;
+            } else if(last == -1){
+                name = line.substr(first+1); 
+                if(DEBUG) cout<<"Last = -1, Adding: "<<name<<";"<<endl;
+
+                string s = name;
+                if (!s.empty() && s[s.length()-1] == '\n') {
+                    if(DEBUG) cout<<"Newline encountered"<<endl;
+                    s.erase(s.length()-1);
+                }
+                
+                vertex *v2 = find(name);
+                v->adjacency.push_back(v2);
+            } else {
+                while(first != last){
+                    int next = line.find(',', first+1);
+                    name = line.substr(first+1, next-(first+1));
+                    if(DEBUG) cout<<"Next: "<<next<<endl;
+                    if(DEBUG) cout<<"Adding: "<<name<<";"<<endl;
+                    vertex *v2 = find(name);
+                    v->adjacency.push_back(v2);
+                    first = next;
+                };
+                name = line.substr(last+1);
+                if(DEBUG) cout<<"Adding: "<<name<<";"<<endl;
+                vertex *v2 = find(name);
+                v->adjacency.push_back(v2);
+            }
+            if(DEBUG) cout<<endl;
+        }
+    }
+
+    //searches through the people vector and returns the pointer to the vertex of the person
+    vertex* find(string name){
+        string s = name;
+        if (!s.empty() && s[s.length()-1] == '\n') {
+            if(DEBUG) cout<<"Newline encountered"<<endl;
+            s.erase(s.length()-1);
+        }
+
+        for(auto i = people.begin(); i != people.end(); ++i){
+            if((*i)->name == name){
+                if(DEBUG) cout<<"Found "<<name<<" as "<<(*i)->name<<";"<<endl;
+                return *i;
+            }
+        }
+        if(DEBUG) cout<<"Couldn't find "<<name<<";"<<endl;
+        return NULL;
+    }
+
+    //prints the adjacency list of the graph
+    void printGraph(){
+        for(int i = 0; i < people.size(); ++i){
+            vertex *v = people.at(i);
+            if(DEBUG) cout<<v->name<<"-"<<endl;
+            for(int j = 0; j < v->adjacency.size(); ++j){
+                vertex *v2 = v->adjacency.at(j);
+                if(DEBUG) cout<<v2->name<<","<<endl;
+            }
+            cout<<endl;
         }
     }
 };
@@ -66,6 +153,7 @@ void printMenu(){
     cout<<"3. Print groups"<<endl;
     cout<<"4. Find the least number of inductions required"<<endl;
     cout<<"5. Quit"<<endl;
+    if(DEBUG) cout<<"6. Print graph"<<endl;
 }
 
 //used to filter user input to just numbers
@@ -103,6 +191,11 @@ int main(){
                 break;
             case 5:
                 break;
+            if(DEBUG){
+                case 6:
+                    city.printGraph();
+                    break;
+            }
             default:
                 cout<<endl<<"Invalid option"<<endl<<endl;
         }
