@@ -129,7 +129,7 @@ class City{
         return NULL;
     }
 
-    //prints the adjacency list of the graph
+    //returns whether two people (names) share an edge to one another
     bool areFriends(string name1, string name2){
         for(auto i = people.begin(); i != people.end(); ++i){
             vertex *v = *i;
@@ -157,6 +157,18 @@ class City{
             }
         }
         cout<<endl;
+    }
+
+    //resets the visited of all the vertices to false
+    void resetVisited(){
+        for(auto i = people.begin(); i != people.end(); ++i){
+            vertex *v = *i;
+            v->visited = false;
+            for(auto j = v->adjacency.begin(); j != v->adjacency.end(); ++j){
+                vertex *v2 = *j; 
+                v2->visited = false;
+            }
+        }
     }
 };
 
@@ -205,14 +217,15 @@ int main(){
                 cin>>str2;
                 cout<<endl;
                 if(city.areFriends(str1, str2)){
-                    cout<<"They know each other"<<endl;
+                    cout<<str1<<" and "<<str2<<" know each other"<<endl;
                 } else {
-                    cout<<"They do not know each other"<<endl;
+                    cout<<str1<<" and "<<str2<<" do not know each other"<<endl;
                 }
                 cout<<endl;
                 cin.ignore();
                 break;
             case 3:
+                city.printGroups();
                 break;
             case 4:
                 break;
