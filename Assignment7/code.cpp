@@ -11,7 +11,7 @@
 
 using namespace std;
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 struct vertex{
     string name;
@@ -170,6 +170,38 @@ class City{
             }
         }
     }
+
+    //prints the group IDs
+    void printGroups(){
+        //DFT using a vector that acts as a stack
+        vector<vertex*> stack;
+        //int to count group #
+        int ID = 1;
+        //outer loop to make sure at least each person is in a group, traversing the people vector
+        for(auto i = people.begin(); i != people.end(); ++i){
+            if(DEBUG) cout<<"Checking "<<(*i)->name<<endl;
+            //add unvisited vertex
+            if(!(*i)->visited){
+                if(DEBUG) cout<<"Initial push "<<(*i)->name<<endl;
+                stack.push_back(*i);
+                (*i)->visited = true;
+                cout<<"Group ID #"<<ID<<endl;
+                ++ID;
+            }
+            while(stack.size() != 0){
+                vertex *v = *(stack.end()-1);
+                stack.erase(stack.end()-1);
+                cout<<v->name<<endl;
+                for(auto j = v->adjacency.begin(); j != v->adjacency.end(); ++j){
+                    if(!(*j)->visited){
+                        if(DEBUG) cout<<"Additional push "<<(*j)->name<<endl;
+                        (*j)->visited = true;
+                        stack.push_back(*j);
+                    }
+                }
+            }
+        }
+    }
 };
 
 
@@ -226,6 +258,7 @@ int main(){
                 break;
             case 3:
                 city.printGroups();
+                city.resetVisited();
                 break;
             case 4:
                 break;
