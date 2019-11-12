@@ -51,11 +51,11 @@ class City{
 
             //see if a comma exists in the line
             if(first == -1){
-                if(DEBUG) cout<<"Adding: "<<line<<";"<<endl;
+                if(DEBUG) cout<<"Adding: "<<line<<endl;
                 vertex *v = new vertex(line);
                 people.push_back(v);
             } else {
-                if(DEBUG) cout<<"Adding: "<<line.substr(0, first)<<";"<<endl;
+                if(DEBUG) cout<<"Adding: "<<line.substr(0, first)<<endl;
                 vertex *v = new vertex(line.substr(0, first));
                 people.push_back(v);
             }
@@ -80,12 +80,13 @@ class City{
             //find the vertex to build edges with
             vertex *v = find(line.substr(0, first));
 
-            //see if a comma exists in the line
+            //see if neighbors exist
             if(first == -1){
                 if(DEBUG) cout<<"Not doing anything"<<endl;
             } else if(last == -1){
+                //see if there is only one neighbor
                 name = line.substr(first+1); 
-                if(DEBUG) cout<<"Last = -1, Adding: "<<name<<";"<<endl;
+                if(DEBUG) cout<<"Last = -1, Adding: "<<name<<endl;
 
                 string s = name;
                 if (!s.empty() && s[s.length()-1] == '\n') {
@@ -100,13 +101,13 @@ class City{
                     int next = line.find(',', first+1);
                     name = line.substr(first+1, next-(first+1));
                     if(DEBUG) cout<<"Next: "<<next<<endl;
-                    if(DEBUG) cout<<"Adding: "<<name<<";"<<endl;
+                    if(DEBUG) cout<<"Adding: "<<name<<endl;
                     vertex *v2 = find(name);
                     v->adjacency.push_back(v2);
                     first = next;
                 };
                 name = line.substr(last+1);
-                if(DEBUG) cout<<"Adding: "<<name<<";"<<endl;
+                if(DEBUG) cout<<"Adding: "<<name<<endl;
                 vertex *v2 = find(name);
                 v->adjacency.push_back(v2);
             }
@@ -124,25 +125,27 @@ class City{
 
         for(auto i = people.begin(); i != people.end(); ++i){
             if((*i)->name == name){
-                if(DEBUG) cout<<"Found "<<name<<" as "<<(*i)->name<<";"<<endl;
+                if(DEBUG) cout<<"Found "<<name<<" as "<<(*i)->name<<endl;
                 return *i;
             }
         }
-        if(DEBUG) cout<<"Couldn't find "<<name<<";"<<endl;
+        if(DEBUG) cout<<"Couldn't find "<<name<<endl;
         return NULL;
     }
 
     //prints the adjacency list of the graph
     void printGraph(){
-        for(int i = 0; i < people.size(); ++i){
-            vertex *v = people.at(i);
-            if(DEBUG) cout<<v->name<<"-"<<endl;
-            for(int j = 0; j < v->adjacency.size(); ++j){
-                vertex *v2 = v->adjacency.at(j);
-                if(DEBUG) cout<<v2->name<<","<<endl;
+        for(auto i = people.begin(); i != people.end(); ++i){
+            vertex *v = *i;
+            cout<<v->name<<"-";
+            for(auto j = v->adjacency.begin(); j != v->adjacency.end(); ++j){
+                vertex *v2 = *j; 
+                cout<<v2->name;
+                if(v->adjacency.end()-1 == v->adjacency.begin() || j == v->adjacency.end()-1) cout<<endl;
+                else cout<<",";
             }
-            cout<<endl;
         }
+        cout<<endl;
     }
 };
 
