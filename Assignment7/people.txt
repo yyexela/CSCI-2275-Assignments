@@ -13,7 +13,7 @@ Nathan-Danielle
 Kylie-Tang
 Ian-Nick,Daniel,Ria
 Zack-Sam,Drew
-Simon-Tim,John
+Simon-Timothy,John
 Daniel-Ian
 Akhil-Paramvir,Aurangzeb
 Aurangzeb-Akhil,Kieran
@@ -23,4 +23,3 @@ Tang-Kylie,Divya,Danielle
 Ria-Ian
 John-Simon
 Kieran-Aurangzeb,Earl
-Tim-Simon
