@@ -11,8 +11,10 @@
 
 using namespace std;
 
-const bool DEBUG = true;
+//prints debug info when true
+const bool DEBUG = false;
 
+//struct holding a single person
 struct vertex{
     string name;
     bool visited;
@@ -113,12 +115,6 @@ class City{
 
     //searches through the people vector and returns the pointer to the vertex of the person
     vertex* find(string name){
-        string s = name;
-        if (!s.empty() && s[s.length()-1] == '\n') {
-            if(DEBUG) cout<<"Newline encountered"<<endl;
-            s.erase(s.length()-1);
-        }
-
         for(auto i = people.begin(); i != people.end(); ++i){
             if((*i)->name == name){
                 if(DEBUG) cout<<"Found "<<name<<" as "<<(*i)->name<<endl;
@@ -190,6 +186,7 @@ class City{
                 cout<<"Group ID #"<<ID<<endl;
                 ++ID;
             }
+            //push all unvisited neighbors of top of stack
             while(stack.size() != 0){
                 vertex *v = *(stack.end()-1);
                 stack.erase(stack.end()-1);
@@ -209,10 +206,10 @@ class City{
     void lstNumIntro(string name1, string name2){
         vector<vertex*> queue;
         if(people.size() <= 0) return;
-        //push back first person
         vertex* v1 = find(name1);
         //check if name exists;
         if(v1 == NULL) return;
+        //push back first person
         if(DEBUG) cout<<"Initial push "<<v1->name<<endl;
         queue.push_back(v1);
         v1->visited = true;
@@ -221,8 +218,10 @@ class City{
         v1->path = path;
         v1->distance = 0;
         while(queue.size() > 0){
+            //pop front of queue
             v1 = *queue.begin();
             queue.erase(queue.begin());
+            //add all unvitied neighbors of popped elements
             for(auto i = v1->adjacency.begin(); i != v1->adjacency.end(); ++i){
                 if(!(*i)->visited){
                     if(DEBUG) cout<<"Additional push "<<(*i)->name<<endl;
@@ -232,6 +231,7 @@ class City{
                     (*i)->distance = v1->distance + 1;
                     queue.push_back(*i);
                 }
+                //see if pushed element is destination
                 if((*i)->name == name2){
                     cout<<"Path from "<<name1<<" to "<<name2<<" is: "<<((*i)->path)<<endl;
                     cout<<"Distance is "<<(*i)->distance<<endl;
@@ -243,7 +243,7 @@ class City{
     }
 };
 
-
+//prints user menu
 void printMenu(){
     cout<<"1. Print list of people and their acquantances"<<endl;
     cout<<"2. Print if people know each other"<<endl;
@@ -267,16 +267,21 @@ bool getNum(string &option){
 int main(){
     //file name to build graph from
     const string FILE = "people.txt";
+    //initialize city class used to store graph and perform operations
     City city;
     //build the graph
     city.buildGraph(FILE);
 
+    //empty strings used to store user input
     string option = "", str1 = "", str2 = "";
     do{
         str1 = str2 = option = "";
+        //prints the user menu
         printMenu();
+        //filters user input
         while(!getNum(option));
         cout<<endl;
+        //case switch to execute user operation
         switch(stoi(option)){
             case 1:
                 city.printGraph();
@@ -288,9 +293,9 @@ int main(){
                 cin>>str2;
                 cout<<endl;
                 if(city.areFriends(str1, str2)){
-                    cout<<str1<<" and "<<str2<<" know each other"<<endl;
+                    cout<<"\""<<str1<<"\" and \""<<str2<<"\" know each other"<<endl;
                 } else {
-                    cout<<str1<<" and "<<str2<<" do not know each other"<<endl;
+                    cout<<"\""<<str1<<"\" and \""<<str2<<"\" do not know each other"<<endl;
                 }
                 cout<<endl;
                 cin.ignore();
